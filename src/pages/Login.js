@@ -111,12 +111,11 @@ const Login = () => {
             refreshToken: res.refreshToken,
           };
           dispatch(handleLogin(data));
-          console.log("ssssss");
 
           const primaryRole = data.roles.find((role) =>
             rolePriority.includes(role)
           );
-          console.log(primaryRole);
+
           navigate(getHomeRouteForLoggedInUser(primaryRole));
           toast((t) => (
             <ToastContent

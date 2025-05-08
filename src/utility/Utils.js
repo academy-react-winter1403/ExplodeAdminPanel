@@ -66,11 +66,12 @@ export const getUserData = () => JSON.parse(localStorage.getItem("userData"));
  * @param {String} userRole Role of user
  */
 export const getHomeRouteForLoggedInUser = (userRole) => {
+  console.log("aaa", userRole);
   switch (userRole) {
     case "Administrator":
-      return "/dashboard/ecommerce"; // Adjust this route as needed
+      return "/home";
     case "Student":
-      return "/student-home";
+      return "/student";
     default:
       return "/login";
   }

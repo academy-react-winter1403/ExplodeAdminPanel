@@ -1,10 +1,6 @@
-// ** React Imports
-import { Link } from "react-router-dom";
-
-// ** Custom Components
+import { Link, useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
 import Avatar from "@components/avatar";
-
-// ** Third Party Components
 import {
   User,
   Mail,
@@ -15,19 +11,24 @@ import {
   HelpCircle,
   Power,
 } from "react-feather";
-
-// ** Reactstrap Imports
 import {
   UncontrolledDropdown,
   DropdownMenu,
   DropdownToggle,
   DropdownItem,
 } from "reactstrap";
-
-// ** Default Avatar Image
 import defaultAvatar from "@src/assets/images/portrait/small/avatar-s-11.jpg";
+import { handleLogout } from "@store/authentication"; // فرض بر اینکه این action داری
 
 const UserDropdown = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const onLogout = () => {
+    dispatch(handleLogout()); // مثلا پاک کردن user از store
+    navigate("/login");
+  };
+
   return (
     <UncontrolledDropdown tag="li" className="dropdown-user nav-item">
       <DropdownToggle
@@ -65,11 +66,7 @@ const UserDropdown = () => {
           <span className="align-middle">Chats</span>
         </DropdownItem>
         <DropdownItem divider />
-        <DropdownItem
-          tag={Link}
-          to="/pages/"
-          onClick={(e) => e.preventDefault()}
-        >
+        <DropdownItem tag={Link} to="/" onClick={(e) => e.preventDefault()}>
           <Settings size={14} className="me-75" />
           <span className="align-middle">Settings</span>
         </DropdownItem>
@@ -81,7 +78,7 @@ const UserDropdown = () => {
           <HelpCircle size={14} className="me-75" />
           <span className="align-middle">FAQ</span>
         </DropdownItem>
-        <DropdownItem tag={Link} to="/login">
+        <DropdownItem onClick={onLogout}>
           <Power size={14} className="me-75" />
           <span className="align-middle">Logout</span>
         </DropdownItem>
