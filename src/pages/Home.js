@@ -10,7 +10,7 @@ import {
 const Home = () => {
   return (
     <div>
-      <Card>
+      {/* <Card>
         <CardHeader>
           <CardTitle>Kick start your project 🚀</CardTitle>
         </CardHeader>
@@ -27,7 +27,7 @@ const Home = () => {
             to understand where to go from here and how to use our template.
           </CardText>
         </CardBody>
-      </Card>
+      </Card> */}
 
       <Card>
         <CardHeader>
