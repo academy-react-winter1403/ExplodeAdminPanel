@@ -28,6 +28,7 @@ const DefaultRoute = "/home";
 
 const Home = lazy(() => import("../../pages/Home"));
 const NewsListPage = lazy(() => import("../../pages/NewsList"));
+const NewsDeatil = lazy(() => import("../../pages/NewsDetail"));
 const SecondPage = lazy(() => import("../../pages/SecondPage"));
 const Login = lazy(() => import("../../pages/Login"));
 const Register = lazy(() => import("../../pages/Register"));
@@ -58,10 +59,10 @@ const Routes = [
     path: "/newsList",
     element: <NewsListPage />,
   },
-  // {
-  //   path: "/newsDetail/:id",
-  //   element: <NewsDeatil />,
-  // },
+  {
+    path: "/newsDetail/:id",
+    element: <NewsDeatil />,
+  },
   {
     path: "/addNews",
     element: <AddNews />,
