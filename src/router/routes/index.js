@@ -12,6 +12,7 @@ import PublicRoute from "@components/routes/PublicRoute";
 
 // ** Utils
 import { isObjEmpty } from "@utils";
+import AddNews from "../../pages/AddNews";
 
 const getLayout = {
   blank: <BlankLayout />,
@@ -56,6 +57,14 @@ const Routes = [
   {
     path: "/newsList",
     element: <NewsListPage />,
+  },
+  // {
+  //   path: "/newsDetail/:id",
+  //   element: <NewsDeatil />,
+  // },
+  {
+    path: "/addNews",
+    element: <AddNews />,
   },
   {
     path: "/login",
