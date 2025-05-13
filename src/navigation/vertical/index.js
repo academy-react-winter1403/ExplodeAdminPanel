@@ -27,4 +27,17 @@ export default [
       },
     ],
   },
+  {
+    id: "usersPage",
+    title: "Mannage Users",
+    icon: <Mail size={20} />,
+    children: [
+      {
+        id: "userlist",
+        title: "UsersList",
+        icon: <Circle size={12} />,
+        navLink: "/userslist",
+      },
+    ],
+  },
 ];

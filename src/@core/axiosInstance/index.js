@@ -11,10 +11,10 @@ instance.interceptors.request.use((config) => {
     config.data = JSON.stringify(config.data); // اضافه کردن هوشمند نوع داده به صورت داینامیک
   }
   const token = localStorage.getItem("accessToken");
-  console.log("Request interceptor", token);
 
   if (token) {
-    config.headers.Authorization = `Bearer ${token}`; // اضافه کردن توکن به هدر در صورت وجود
+    const cleantoken = token.slice(1, -1);
+    config.headers.Authorization = `Bearer ${cleantoken}`; // اضافه کردن توکن به هدر در صورت وجود
   }
 
   return config;

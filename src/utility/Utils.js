@@ -36,6 +36,17 @@ export const formatDate = (
   if (!value) return value;
   return new Intl.DateTimeFormat("en-US", formatting).format(new Date(value));
 };
+export const formatDatePersian = (
+  value,
+  formatting = { month: "short", day: "numeric", year: "numeric" }
+) => {
+  if (!value) return value;
+
+  return new Intl.DateTimeFormat("fa-IR", {
+    ...formatting,
+    calendar: "persian",
+  }).format(new Date(value));
+};
 
 // ** Returns short month of passed date
 export const formatDateToMonthShort = (value, toTimeForCurrentDay = true) => {

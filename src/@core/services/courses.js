@@ -1,6 +1,8 @@
 // import toast from 'react-hot-toast';
 // import instance from '../axiosInstance';
 
+import instance from "../axiosInstance";
+
 // export const getTopCourses = async (urlParams) => {
 //   try {
 //     const response = await instance.get('/Home/GetCoursesTop', {
@@ -205,3 +207,4 @@
 //     throw error;
 //   }
 // }
+
