@@ -35,6 +35,7 @@ const ForgotPassword = lazy(() => import("../../pages/ForgotPassword"));
 const Error = lazy(() => import("../../pages/Error"));
 const Sample = lazy(() => import("../../pages/Sample"));
 const UsersDetails = lazy(() => import("../../pages/UsersDetails"));
+const CoursesList = lazy(() => import("../../pages/CoursesList"));
 
 // ** Merge Routes
 const Routes = [
@@ -48,20 +49,16 @@ const Routes = [
     element: <Home />,
   },
   {
-    path: "/sample",
-    element: <Sample />,
-  },
-  {
-    path: "/second-page",
-    element: <SecondPage />,
-  },
-  {
     path: "/userslist",
     element: <UsersList />,
   },
   {
     path: "/userdetail/:id",
     element: <UserView />,
+  },
+  {
+    path: '/coursesList',
+    element: <CoursesList />
   },
   {
     path: "/login",
@@ -134,7 +131,7 @@ const MergeLayoutRoutes = (layout, defaultLayout) => {
             // eslint-disable-next-line multiline-ternary
             isObjEmpty(route.element.props) && isBlank === false
               ? // eslint-disable-next-line multiline-ternary
-                LayoutWrapper
+              LayoutWrapper
               : Fragment;
 
           route.element = (

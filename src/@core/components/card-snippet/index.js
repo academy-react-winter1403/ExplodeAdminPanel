@@ -25,17 +25,17 @@ const CardSnippet = (props) => {
   const Wrapper = noBody ? Fragment : CardBody;
 
   return (
-    <Card className="card-snippet">
+    <Card className='card-snippet bg-white'>
       <CardHeader>
-        <CardTitle tag="h4">{title}</CardTitle>
-        <div className="views cursor-pointer" onClick={toggle}>
+        <CardTitle tag='h4'>{title}</CardTitle>
+         <div className='views cursor-pointer' onClick={toggle}>
           {IconCode}
-        </div>
+        </div> 
       </CardHeader>
       <Wrapper>{children}</Wrapper>
-      <Collapse isOpen={isOpen}>
+      {/* <Collapse isOpen={isOpen}>
         <CardBody>{code}</CardBody>
-      </Collapse>
+      </Collapse> */}
     </Card>
   );
 };

@@ -8,26 +8,6 @@ export default [
     navLink: "/home",
   },
   {
-    id: "secondPage",
-    title: "Second Page",
-    icon: <Mail size={20} />,
-    navLink: "/second-page",
-  },
-  {
-    id: "smaplePage",
-    title: "Sample Page",
-    icon: <Airplay size={20} />,
-    // navLink: "/sample",
-    children: [
-      {
-        id: "invoiceList",
-        title: "List",
-        icon: <Circle size={12} />,
-        navLink: "/apps/invoice/list",
-      },
-    ],
-  },
-  {
     id: "usersPage",
     title: "Mannage Users",
     icon: <Mail size={20} />,
@@ -40,4 +20,17 @@ export default [
       },
     ],
   },
+  {
+    id: "coursesPage",
+    title: "مدیریت دوره ها",
+    icon: <Mail size={20} />,
+    children: [
+      {
+        id: "coursesList",
+        title: "لیست دوره ها",
+        icon: <Circle size={12} />,
+        navLink: '/coursesList'
+      },
+    ],
+  }
 ];
