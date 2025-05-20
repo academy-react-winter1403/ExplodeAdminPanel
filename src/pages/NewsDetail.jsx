@@ -14,7 +14,7 @@ function NewsDetail() {
 
   const { id } = useParams();
 
-  const getDetail = async () => {
+  const getDetail = async (id) => {
     try {
       const result = await getNewsDetail(id);
       setCardDetail(result.detailsNewsDto);
