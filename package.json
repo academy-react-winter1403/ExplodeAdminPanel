@@ -5,6 +5,9 @@
   "dependencies": {
     "@casl/ability": "^6.3.2",
     "@casl/react": "^3.1.0",
+    "@ckeditor/ckeditor5-build-classic": "^41.4.2",
+    "@ckeditor/ckeditor5-font": "34.0.0",
+    "@ckeditor/ckeditor5-react": "^9.5.0",
     "@esbuild-plugins/node-globals-polyfill": "^0.1.1",
     "@fullcalendar/core": "^5.11.0",
     "@fullcalendar/daygrid": "^5.11.0",

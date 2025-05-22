@@ -6,6 +6,7 @@ import ReactPaginate from 'react-paginate'
 import { useDispatch, useSelector } from 'react-redux'
 
 import { fetchAllCourses, setCurrentPage } from '../../redux/coursesSlice'
+import AddCourse from './AddCourse'
 const Table = () => {
     const [activeTab, setActiveTab] = useState('1')
     const dispatch = useDispatch()
@@ -49,7 +50,7 @@ const Table = () => {
                     <TabPane tabId='2'>
                         <Card >
                             <CardBody className='bg-white'>
-
+                                <AddCourse />
                             </CardBody>
                         </Card>
                     </TabPane>

@@ -6,6 +6,8 @@ import { formatDate } from '../../utility/DateFormatter';
 import { courseDeleted, updateCourseStatus } from '../../redux/coursesSlice';
 import { deleteCourse, updateStatus } from '../../@core/services/courses';
 import { Edit, MessageSquare, Trash2 } from 'react-feather';
+import Comment from './Comments';
+
 
 
 
@@ -17,6 +19,8 @@ const CoursesTable = () => {
     const [status, setStatus] = useState(false)
     const dispatch = useDispatch()
     const [buttonLoading, setButtonLoading] = useState(false)
+    const [commentModal, setCommentModal] = useState(false)
+
     const handleStatus = async () => {
         setButtonLoading(true)
         await updateStatus(courseId, status, setButtonLoading, setCenteredModal)
@@ -34,9 +38,10 @@ const CoursesTable = () => {
         dispatch(courseDeleted({ id: courseId }))
     }
 
+
     return (
         <>
-            <Table responsive className='bg-white'>
+            <Table responsive >
                 <thead>
                     <tr>
                         <th>عکس</th>
@@ -83,7 +88,7 @@ const CoursesTable = () => {
                                 <td >
                                     {
                                         !item.isdelete && <>
-                                            <MessageSquare className='cursor-pointer' />
+                                            <MessageSquare className='cursor-pointer' onClick={() => { setCourseId(item.courseId); setCommentModal(!commentModal) }} />
                                             <Edit className='cursor-pointer mx-1' />
                                             <Trash2 onClick={() => { setCourseId(item.courseId); setDeleteModal(!deleteModal) }} className='cursor-pointer' />
                                         </>
@@ -129,6 +134,15 @@ const CoursesTable = () => {
                     </Button>
                 </ModalFooter>
             </Modal>
+
+            {/* Comment Modal */}
+            <Comment
+                commentModal={commentModal}
+                setCommentModal={setCommentModal}
+                courseId={courseId}
+            />
+
+
 
         </>
 

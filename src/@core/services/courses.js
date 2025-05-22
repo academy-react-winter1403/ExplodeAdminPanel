@@ -40,3 +40,69 @@ export const deleteCourse = async (courseId, status, setButtonLoading, setDelete
         throw error;
     }
 };
+export const courseComments = async (courseId) => {
+    try {
+        const response = await instance.get(`/Course/GetCourseCommnets/${courseId}`)
+        toast.success(response.message)
+        return response;
+    } catch (error) {
+        console.error("Error:", error);
+        throw error;
+    }
+};
+
+export const courseCommentReplies = async (courseId, commentId) => {
+    try {
+        const response = await instance.get(`/Course/GetCourseReplyCommnets/${courseId}/${commentId}`)
+        toast.success(response.message)
+        return response;
+    } catch (error) {
+        console.error("Error:", error);
+        throw error;
+    }
+};
+
+export const addCommentReplyCourse = async (loading, replyModal, obj) => {
+    try {
+        const formData = new FormData();
+        formData.append('CommentId', obj.CommentId)
+        formData.append('CourseId', obj.CourseId)
+        formData.append('Title', obj.Title)
+        formData.append('Describe', obj.Describe)
+        loading(true)
+        const response = await instance.post(`/Course/AddReplyCourseComment`, formData);
+        loading(false)
+        replyModal(false)
+        console.log(response)
+        return response;
+    } catch (error) {
+        loading(false)
+        replyModal(false)
+        console.error('Error:', error);
+        throw error;
+    }
+}
+
+export const deleteCourseReplyComment = async (commentId, buttonLoading, deleteModal) => {
+    try {
+        const response = await instance.delete(`/Course/DeleteCourseComment/`, { params: { CourseCommandId: commentId } })
+        toast.success(response.message)
+        return response;
+    } catch (error) {
+        console.error("Error:", error);
+        buttonLoading(false)
+        deleteModal(false)
+        throw error;
+    }
+};
+
+
+export const getCourseInfoForCreate = async () => {
+    try {
+        const response = await instance.get('/Course/GetCreate')
+        return response;
+    } catch (error) {
+        console.error("Error:", error);
+        throw error;
+    }
+};
