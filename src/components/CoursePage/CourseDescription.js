@@ -3,7 +3,6 @@ import { Fragment, useState } from 'react'
 import { CKEditor } from '@ckeditor/ckeditor5-react';
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 
-
 // ** Utils
 import { isObjEmpty } from '@utils'
 
@@ -13,26 +12,28 @@ import { useForm, Controller } from 'react-hook-form'
 import { ArrowLeft, ArrowRight } from 'react-feather'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { Form, Label, Input, Row, Col, Button, FormFeedback } from 'reactstrap'
+import { useDispatch, useSelector } from 'react-redux';
+import { setCourseDescribe, setCourseMiniDescribe, setCourseTitle } from '../../redux/addCourseSlice';
 const CourseDescription = ({ stepper }) => {
-
-  // const fieldsSchema = yup.object().shape({
-  //   capacity: yup.string().required('تعداد نفرات را وارد کنید'),
-  //   sessionNumber: yup.string().required('تعداد جلسات را وارد کنید'),
-  //   coursePrice: yup.string().required('قیمت دوره را وارد کنید'),
-  // })
+  const [editorData, setEditorData] = useState('')
+  const dispatch = useDispatch()
+  const fieldsSchema = yup.object().shape({
+    courseTitle: yup.string().required('عنوان را وارد کنید'),
+  })
 
   const {
     control,
     handleSubmit,
     formState: { errors }
   } = useForm({
-    // resolver: yupResolver(fieldsSchema)
+    resolver: yupResolver(fieldsSchema)
   })
 
-  const onSubmit = () => {
-    if (isObjEmpty(errors)) {
-      stepper.next()
-    }
+  const onSubmit = (data) => {
+    dispatch(setCourseTitle(data.courseTitle))
+    dispatch(setCourseMiniDescribe(data.courseExcerpt))
+    dispatch(setCourseDescribe(editorData))
+    stepper.next()
   }
   return (
     <Fragment>
@@ -93,7 +94,7 @@ const CourseDescription = ({ stepper }) => {
               }}
               onChange={(event, editor) => {
                 const data = editor.getData();
-                console.log({ data });
+                setEditorData(data)
               }}
               config={{
                 language: 'fa',

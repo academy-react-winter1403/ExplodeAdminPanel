@@ -73,7 +73,6 @@ export const addCommentReplyCourse = async (loading, replyModal, obj) => {
         const response = await instance.post(`/Course/AddReplyCourseComment`, formData);
         loading(false)
         replyModal(false)
-        console.log(response)
         return response;
     } catch (error) {
         loading(false)
@@ -101,6 +100,32 @@ export const getCourseInfoForCreate = async () => {
     try {
         const response = await instance.get('/Course/GetCreate')
         return response;
+    } catch (error) {
+        console.error("Error:", error);
+        throw error;
+    }
+};
+
+
+export const addNewCourse = async (formData, setLoading) => {
+    try {
+        const response = await instance.post('/Course', formData)
+        return response
+    } catch (error) {
+        console.error("Error:", error);
+        setLoading(false)
+        throw error;
+    }
+};
+
+export const addTechnologyForCourse = async (id, techData) => {
+    try {
+        const response = await instance.post('/Course/AddCourseTechnology', techData, {
+            params: {
+                courseId: id
+            }
+        })
+        return response
     } catch (error) {
         console.error("Error:", error);
         throw error;

@@ -13,14 +13,17 @@ export const fetchAllCourses = createAsyncThunk(
     }
 )
 
+
+
 export const fetchCourseCommentReplies = createAsyncThunk(
     "courses/fetchCourseCommentReplies",
     async (_, thunkAPI) => {
         const state = thunkAPI.getState().courses;
-        const result = await courseCommentReplies(state.courseId, state.commentId)
-        return result
+        const response = await courseCommentReplies(state.courseId, state.commentId);
+        const commentId = state.commentId
+        return { commentId, replies: response };
     }
-)
+);
 
 export const fetchCourseComments = createAsyncThunk(
     "courses/fetchCourseComments",
@@ -41,7 +44,8 @@ export const coursesSlice = createSlice({
         courseId: null,
         commentId: null,
         commentReplies: [],
-        comments: []
+        comments: [],
+        allComments: [],
     },
     reducers: {
         setCurrentPage: (state, action) => {
@@ -67,6 +71,30 @@ export const coursesSlice = createSlice({
             const { commentId } = action.payload
             state.commentReplies = state.commentReplies.filter((c) => c.id !== commentId)
         }
+        ,
+        setDeleteCommentReply: (state, action) => {
+            const { commentId } = action.payload;
+
+            const removeReply = (comments, replyId) => {
+                return comments.map((comment) => {
+                    if (comment.replies?.length > 0) {
+                        const newReplies = comment.replies.filter((reply) => reply.id !== replyId);
+                        return {
+                            ...comment,
+                            acceptReplysCount:
+                                typeof comment.acceptReplysCount === 'number'
+                                    ? Math.max(0, comment.acceptReplysCount - (comment.replies.length - newReplies.length))
+                                    : newReplies.length,
+                            replies: removeReply(newReplies, replyId),
+                        };
+                    }
+                    return comment;
+                });
+            };
+
+            state.allComments = removeReply(state.allComments, commentId);
+        },
+        
     },
     extraReducers: (builder) => {
         builder
@@ -76,11 +104,38 @@ export const coursesSlice = createSlice({
             })
 
             .addCase(fetchCourseCommentReplies.fulfilled, (state, action) => {
-                state.commentReplies = action.payload;
+                const { commentId, replies } = action.payload;
+
+                const addReplies = (comments, parentId, newReplies) => {
+                    return comments.map((comment) => {
+                        if (comment.id === parentId) {
+                            return {
+                                ...comment,
+                                replies: newReplies.map((reply) => ({
+                                    ...reply,
+                                    replies: [],
+                                })),
+                            };
+                        }
+                        if (comment.replies.length > 0) {
+                            return {
+                                ...comment,
+                                replies: addReplies(comment.replies, parentId, newReplies),
+                            };
+                        }
+                        return comment
+                    })
+                }
+
+                state.allComments = addReplies(state.allComments, commentId, replies);
             })
 
             .addCase(fetchCourseComments.fulfilled, (state, action) => {
                 state.comments = action.payload;
+                state.allComments = action.payload.map((comment) => ({
+                    ...comment,
+                    replies: []
+                }))
             })
 
     },
@@ -92,6 +147,7 @@ export const {
     courseDeleted,
     setCourseId,
     setCommentId,
-    updateCommentReplies
+    updateCommentReplies,
+    setDeleteCommentReply,
 } = coursesSlice.actions
 export default coursesSlice.reducer;

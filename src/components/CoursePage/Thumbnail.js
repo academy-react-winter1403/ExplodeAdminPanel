@@ -7,11 +7,14 @@ import { Card, CardHeader, CardTitle, CardBody, Button, ListGroup, ListGroupItem
 // ** Third Party Imports
 import { useDropzone } from 'react-dropzone'
 import { FileText, X, DownloadCloud } from 'react-feather'
+import { useDispatch } from 'react-redux'
+import { setCourseThumbnail } from '../../redux/addCourseSlice'
 
 const Thumbnail = () => {
     // ** State
     const [files, setFiles] = useState([])
 
+    const dispatch = useDispatch()
     const { getRootProps, getInputProps } = useDropzone({
         multiple: false,
         onDrop: acceptedFiles => {
@@ -21,7 +24,7 @@ const Thumbnail = () => {
 
     const renderFilePreview = file => {
         if (file.type.startsWith('image')) {
-            console.log(file.path)
+            dispatch(setCourseThumbnail(file))
             return <img className='rounded' alt={file.name} src={URL.createObjectURL(file)} height='28' width='28' />
         } else {
             return <FileText size='28' />
@@ -29,6 +32,7 @@ const Thumbnail = () => {
     }
 
     const handleRemoveFile = file => {
+        dispatch(setCourseThumbnail(false))
         const uploadedFiles = files
         const filtered = uploadedFiles.filter(i => i.name !== file.name)
         setFiles([...filtered])

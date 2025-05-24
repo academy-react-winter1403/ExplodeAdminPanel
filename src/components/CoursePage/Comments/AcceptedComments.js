@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Alert, Button, Row, Table } from 'reactstrap'
 import { formatDate } from '../../../utility/DateFormatter'
 import { ValidURL } from '../../../utility/ValidUrl'
@@ -16,16 +16,13 @@ const AcceptedComments = ({ courseId }) => {
     const { comments } = useSelector((state) => state.courses)
     const [replyModal, setReplyModal] = useState(false)
     const dispatch = useDispatch()
-
     const handlePagination = ({ selected }) => {
         setCurrentPage(selected)
     }
-
     const handleComments = async () => {
         dispatch(setCourseId(courseId))
         dispatch(fetchCourseComments())
     }
-
     const [currentPage, setCurrentPage] = useState(0)
     const itemsPerPage = 5
     const pageCount = Math.ceil(comments.length / itemsPerPage);
@@ -33,7 +30,6 @@ const AcceptedComments = ({ courseId }) => {
         currentPage * itemsPerPage,
         (currentPage + 1) * itemsPerPage
     )
-
     useEffect(() => {
         handleComments()
     }, [])
@@ -113,6 +109,7 @@ const AcceptedComments = ({ courseId }) => {
                 setDetailModal={setDetailModal}
                 comments={comments}
                 commentId={commentId}
+                courseId={courseId}
             />
 
             <ReplyComment
