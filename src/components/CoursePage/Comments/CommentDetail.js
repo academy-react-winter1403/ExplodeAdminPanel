@@ -3,7 +3,7 @@ import { MessageSquare } from 'react-feather'
 import { Alert, Button, Col, Modal, ModalBody, ModalFooter, ModalHeader, Row, Spinner } from 'reactstrap'
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchCourseCommentReplies, setCommentId, setCourseId, updateCommentReplies } from '../../../redux/coursesSlice';
+import { fetchCourseCommentReplies, setCommentId, setCourseId } from '../../../redux/coursesSlice';
 import Comment from './Comment';
 
 const CommentDetail = ({ detailModal, setDetailModal, commentId, courseId, comments }) => {

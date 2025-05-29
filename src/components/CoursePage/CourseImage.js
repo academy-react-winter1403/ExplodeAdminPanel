@@ -1,19 +1,17 @@
 // ** React Imports
 import { Fragment, useState } from 'react'
-
-
 import MainImage from './MainImage'
-import Thumbnail from './Thumbnail'
 import { Button, Row, Spinner } from 'reactstrap'
 import { ArrowLeft, ArrowRight } from 'react-feather'
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchAddCourse, setCourseImage, setCourseThumbnail, setCourseUUID } from '../../redux/addCourseSlice';
+import { fetchAddCourse, setCourseImage, setCourseUUID } from '../../redux/addCourseSlice';
 import { nanoid } from '@reduxjs/toolkit'
 
 const CourseImage = ({ stepper }) => {
     const dispatch = useDispatch()
     const [loading, setLoading] = useState(false)
     const { courseTitle } = useSelector((state) => state.addCourse)
+    const [files, setFiles] = useState([])
     const generateUniqueUrlString = (title) => {
         const slug = title
             .toLowerCase()
@@ -32,19 +30,17 @@ const CourseImage = ({ stepper }) => {
         setLoading(true)
         const result = await dispatch(fetchAddCourse(setLoading))
         dispatch(setCourseImage(false))
-        dispatch(setCourseThumbnail(false))
         setLoading(false)
         if (result.payload.id) {
-            stepper.next()
+
+            setFiles([])
         }
-
-
+        stepper.next()
     }
     return (
         <Fragment>
             <Row>
-                <MainImage />
-                <Thumbnail />
+                <MainImage files={files} setFiles={setFiles} />
             </Row>
             <div className='d-flex justify-content-between'>
                 <Button type='button' color='primary' className='btn-prev' onClick={() => stepper.previous()}>

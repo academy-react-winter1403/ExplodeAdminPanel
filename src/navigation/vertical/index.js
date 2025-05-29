@@ -24,13 +24,7 @@ export default [
     id: "coursesPage",
     title: "مدیریت دوره ها",
     icon: <Book size={20} />,
-    children: [
-      {
-        id: "coursesList",
-        title: "لیست دوره ها",
-        icon: <Circle size={12} />,
-        navLink: '/coursesList'
-      },
-    ],
+    navLink: '/coursesList'
+    
   }
 ];

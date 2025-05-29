@@ -13,52 +13,48 @@ import Select from 'react-select'
 import { selectThemeColors } from '@utils'
 // ** Reactstrap Imports
 import { Form, Label, Input, Row, Col, Button, FormFeedback, Spinner } from 'reactstrap'
-import { useNavigate } from 'react-router-dom'
 import { useSelector } from 'react-redux'
 import { addTechnologyForCourse } from '../../@core/services/courses'
-const AddTechnology = () => {
-    const navigate = useNavigate()
+const AddTechnology = ({ resetForm, stepper }) => {
+
     const { courseTechnologies } = useSelector((state) => state.addCourse)
     const { courseId } = useSelector((state) => state.addCourse)
     const [loading, setLoading] = useState(false)
     const fieldsSchema = yup.object().shape({
-        courseTechnology: yup.object({
-            value: yup.string().required('تکنولوژی دوره را انتخاب کنید'),
-        })
-            .nullable()
+        courseTechnology: yup
+            .array()
+            .of(
+                yup.object().shape({
+                    value: yup.string().required('تکنولوژی دوره را انتخاب کنید'),
+                    label: yup.string().required(),
+                })
+            )
+            .min(1, 'حداقل یک تکنولوژی انتخاب کنید')
             .required('تکنولوژی دوره را انتخاب کنید'),
+    });
 
-        courseSecondTechnology: yup.object({
-            value: yup.string().required('تکنولوژی دوره را انتخاب کنید'),
-        })
-            .nullable()
-            .required('تکنولوژی دوره را انتخاب کنید'),
-    })
     const {
         control,
         handleSubmit,
-        formState: { errors }
+        reset,
+        formState: { errors },
     } = useForm({
         resolver: yupResolver(fieldsSchema),
         defaultValues: {
-            courseTechnology: null,
-            courseSecondTechnology: null,
-        }
-    })
+            courseTechnology: [], // مقدار اولیه برای multi-select
+        },
+    });
 
     const onSubmit = async (data) => {
-        const techData = [
-            {
-                "techId": data.courseTechnology.value
-            },
-            {
-                "techId": data.courseSecondTechnology.value
-            }
-        ]
+        const techData = data.courseTechnology.map((tech) => ({
+            techId: tech.value,
+        }));
         setLoading(true)
         await addTechnologyForCourse(courseId, techData)
         setLoading(false)
-        navigate('/coursesList')
+        stepper.to(1)
+
+        console.log(techData)
     }
     return (
         <Fragment>
@@ -75,52 +71,24 @@ const AddTechnology = () => {
                         <Controller
                             name="courseTechnology"
                             control={control}
-                            render={({ field, fieldState: { error } }) => (
+                            render={({ field }) => (
                                 <>
                                     <Select
                                         {...field}
-                                        value={field.value}
+                                        isMulti
                                         theme={selectThemeColors}
-                                        isClearable={false}
+                                        isClearable={true}
                                         id="courseTechnology"
-                                        className={`react-select ${error ? 'is-invalid' : ''}`}
-                                        classNamePrefix='select'
+                                        className={`react-select ${errors.courseTechnology ? 'is-invalid' : ''}`}
+                                        classNamePrefix="select"
                                         options={courseTechnologies}
                                         placeholder="انتخاب کنید"
-                                    />
-                                    {error && (
-                                        <FormFeedback style={{ display: 'block' }}>
-                                            {error.message}
-                                        </FormFeedback>
-                                    )}
-                                </>
-                            )}
-                        />
-                    </Col>
-
-                    <Col md='4' className='mb-1'>
-                        <Label className='form-label' for='courseSecondTechnology'>
-                            تکنولوژی دوره
-                        </Label>
-                        <Controller
-                            name="courseSecondTechnology"
-                            control={control}
-                            render={({ field, fieldState: { error } }) => (
-                                <>
-                                    <Select
-                                        {...field}
+                                        onChange={(selected) => field.onChange(selected || [])}
                                         value={field.value}
-                                        theme={selectThemeColors}
-                                        isClearable={false}
-                                        id="courseSecondTechnology"
-                                        className={`react-select ${error ? 'is-invalid' : ''}`}
-                                        classNamePrefix='select'
-                                        options={courseTechnologies}
-                                        placeholder="انتخاب کنید"
                                     />
-                                    {error && (
+                                    {errors.courseTechnology && (
                                         <FormFeedback style={{ display: 'block' }}>
-                                            {error.message}
+                                            {errors.courseTechnology.message}
                                         </FormFeedback>
                                     )}
                                 </>

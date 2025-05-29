@@ -20,7 +20,7 @@ const CourseDescription = ({ stepper }) => {
   const fieldsSchema = yup.object().shape({
     courseTitle: yup.string().required('عنوان را وارد کنید'),
   })
-
+  
   const {
     control,
     handleSubmit,
@@ -63,7 +63,7 @@ const CourseDescription = ({ stepper }) => {
               id='courseExcerpt'
               name='courseExcerpt'
               control={control}
-              render={({ field }) => <Input type='textarea' maxlength="120" placeholder='توضیح مختصری وارد کنید (120 کاراکتر مجاز)' invalid={errors.courseExcerpt && true} {...field} />}
+              render={({ field }) => <Input type='textarea' maxLength="120" placeholder='توضیح مختصری وارد کنید (120 کاراکتر مجاز)' invalid={errors.courseExcerpt && true} {...field} />}
             />
             {errors.courseExcerpt && <FormFeedback>{errors.courseExcerpt.message}</FormFeedback>}
           </Col>

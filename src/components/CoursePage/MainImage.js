@@ -10,10 +10,9 @@ import { FileText, X, DownloadCloud } from 'react-feather'
 import { useDispatch, useSelector } from 'react-redux'
 import { setCourseImage } from '../../redux/addCourseSlice'
 
-const MainImage = () => {
+const MainImage = ({files,setFiles}) => {
     // ** State
-    const [files, setFiles] = useState([])
-
+    console.log(files)
     const dispatch = useDispatch()
     const { getRootProps, getInputProps } = useDropzone({
         multiple: false,
@@ -23,7 +22,7 @@ const MainImage = () => {
     })
 
     const renderFilePreview = file => {
-        console.log(file)
+        
         if (file.type.startsWith('image')) {
             dispatch(setCourseImage(file))
             return <img className='rounded' alt={file.name} src={URL.createObjectURL(file)} height='28' width='28' />

@@ -28,7 +28,6 @@ export const fetchAddCourse = createAsyncThunk(
         formData.append('UniqeUrlString', state.courseUUID)
         formData.append('StartTime', state.courseStartTime)
         formData.append('EndTime', state.courseEndTime)
-        formData.append('TumbImageAddress', state.courseThumbnail)
         formData.append('Image', state.courseImage)
         const { id } = await addNewCourse(formData, setLoading)
         return { id }
@@ -61,7 +60,6 @@ export const addCourseSlice = createSlice({
         courseEndTime: '',
         courseUUID: null,
         courseImage: false,
-        courseThumbnail: false,
         courseId: null,
     },
     reducers: {
@@ -107,9 +105,6 @@ export const addCourseSlice = createSlice({
         setCourseImage: (state, action) => {
             state.courseImage = action.payload;
         },
-        setCourseThumbnail: (state, action) => {
-            state.courseThumbnail = action.payload;
-        },
         setCourseId: (state, action) => {
             state.courseId = action.payload;
         },
@@ -149,7 +144,6 @@ export const {
     setCourseEndTime,
     setCourseUUID,
     setCourseImage,
-    setCourseThumbnail,
     setCourseId,
     setCourseCapacity,
 } = addCourseSlice.actions

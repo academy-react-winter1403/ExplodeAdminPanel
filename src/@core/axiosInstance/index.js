@@ -38,6 +38,9 @@ const onError = (error) => {
         localStorage.clear("token");
         console.error("Unauthorized:", data);
         break;
+      case 403:
+        toast.error("سطح دسترسی غیر مجاز");
+        break;
       case 404:
         console.error("Not Found:", data);
         toast.error(data.ErrorMessage);

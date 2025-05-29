@@ -28,10 +28,8 @@ const ReplyComment = ({ replyModal, setReplyModal, commentTitle, commentId, cour
         if (Object.values(data).every(field => field.length > 0)) {
             const commentData = { CommentId: commentId, CourseId: courseId, Title: data.Title, Describe: data.Describe }
             console.log(commentId)
-            const result = await addCommentReplyCourse(setLoading, setReplyModal, commentData)
+            await addCommentReplyCourse(setLoading, setReplyModal, commentData)
             dispatch(fetchCourseCommentReplies())
-
-
         } else {
             for (const key in data) {
                 if (data[key].length === 0) {

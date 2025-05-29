@@ -17,7 +17,7 @@ const Comment = ({ comment, onLoadReplies }) => {
     const [replyModal, setReplyModal] = useState(false)
     const [commentTitle, setCommentTitle] = useState(null)
     const notChildren = "00000000-0000-0000-0000-000000000000"
-    const {courseId} = useSelector((state) => state.courses)
+    const { courseId } = useSelector((state) => state.courses)
     const handleDelete = async () => {
         setButtonLoading(true)
         await deleteCourseReplyComment(replyCommentId, setButtonLoading, setDeleteModal)
@@ -30,23 +30,29 @@ const Comment = ({ comment, onLoadReplies }) => {
             <Col sm='12' style={{ boxShadow: '0px 0px 10px #e2e2e2' }}>
                 <Card style={{ backgroundColor: '#fff' }}>
                     <CardHeader className='border-bottom'>
-                        <Col sm='8' className='d-flex align-items-center flex-wrap'>
+                        <Col sm='6' className='d-flex align-items-center flex-wrap'>
                             <Avatar size={'lg'} img={comment?.pictureAddress} className='me-75' />
                             <div className='me-1'>
                                 <div className='me-10'>{comment?.author}</div>
                                 <div><h4>{comment?.title}</h4></div>
                             </div>
-                            <Button color='primary' onClick={() => { setReplyCommentId(comment.id), setReplyModal(true), setCommentTitle(comment.title) }}>پاسخ</Button>
+
                         </Col>
-                        <Col sm='4' className='d-flex justify-content-end align-items-center'>
+                        <Col sm='6' className='d-flex justify-content-end align-items-center'>
 
                             <span className='mx-1'>{formatDate(comment?.insertDate)}</span>
                             {
-                                comment.parentId !== notChildren && <Trash className='cursor-pointer mx-1' onClick={() => { setReplyCommentId(comment?.id), setDeleteModal(true) }} />
+                                comment.parentId !== notChildren && <Trash className='cursor-pointer me-1' onClick={() => { setReplyCommentId(comment?.id), setDeleteModal(true) }} />
                             }
                             {
                                 comment?.acceptReplysCount > 0 && comment.parentId !== notChildren && <ArrowDownCircle className='cursor-pointer' onClick={async () => { dispatch(setCommentId(comment?.id)); dispatch(setCourseId(courseId)); onLoadReplies(comment.id) }} />
                             }
+                            <span style={{marginLeft:'10px',marginRight:'10px'}}>تعداد لایک  {comment?.likeCount}</span>
+
+                            <span>تعداد دیسلایک  {comment?.disslikeCount}</span>
+                        </Col>
+                        <Col sm='12'>
+                            <Button color='primary' style={{width:'100%',marginTop:'10px'}} onClick={() => { setReplyCommentId(comment.id), setReplyModal(true), setCommentTitle(comment.title) }}>پاسخ</Button>
                         </Col>
                     </CardHeader>
                     <CardBody>

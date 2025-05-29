@@ -107,6 +107,7 @@ const CourseBasicInfo = ({ stepper }) => {
 
 
     const onSubmit = (data) => {
+        console.log(data)
         dispatch(setCourseCapacity(data.capacity))
         dispatch(setCourseSessionNumber(data.sessionNumber))
         dispatch(setCourseCost(data.coursePrice))

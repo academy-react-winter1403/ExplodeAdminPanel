@@ -1,11 +1,12 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux'
-import { Badge, Button, Modal, ModalBody, ModalFooter, ModalHeader, Spinner, Table } from 'reactstrap'
+import { Badge, Button, Col, Modal, ModalBody, ModalFooter, ModalHeader, Spinner, Table } from 'reactstrap'
 import { ValidURL } from './../../utility/ValidUrl';
 import { formatDate } from '../../utility/DateFormatter';
-import { courseDeleted, updateCourseStatus } from '../../redux/coursesSlice';
+import { courseDeleted, fetchCourseNotAcceptedComments, updateCourseStatus } from '../../redux/coursesSlice';
 import { deleteCourse, updateStatus } from '../../@core/services/courses';
-import { Edit, MessageSquare, Trash2 } from 'react-feather';
+import { Edit, Eye, MessageSquare, Trash2 } from 'react-feather';
 import Comment from './Comments';
 
 
@@ -20,7 +21,6 @@ const CoursesTable = () => {
     const dispatch = useDispatch()
     const [buttonLoading, setButtonLoading] = useState(false)
     const [commentModal, setCommentModal] = useState(false)
-
     const handleStatus = async () => {
         setButtonLoading(true)
         await updateStatus(courseId, status, setButtonLoading, setCenteredModal)
@@ -38,9 +38,14 @@ const CoursesTable = () => {
         dispatch(courseDeleted({ id: courseId }))
     }
 
-
+    useEffect(() => {
+        dispatch(fetchCourseNotAcceptedComments())
+    }, [])
     return (
         <>
+            <Col style={{ marginBottom: '20px', fontSize: '20px' }} sm='12' >
+
+            </Col>
             <Table responsive >
                 <thead>
                     <tr>
@@ -88,8 +93,8 @@ const CoursesTable = () => {
                                 <td >
                                     {
                                         !item.isdelete && <>
-                                            <MessageSquare className='cursor-pointer' onClick={() => { setCourseId(item.courseId); setCommentModal(!commentModal) }} />
-                                            <Edit className='cursor-pointer mx-1' />
+                                            <Link to={`/coursedetail/${item.courseId}`} className='' style={{ display: 'inline' }}><Eye /></Link>
+                                            <MessageSquare className='cursor-pointer mx-1' onClick={() => { setCourseId(item.courseId); setCommentModal(!commentModal) }} />
                                             <Trash2 onClick={() => { setCourseId(item.courseId); setDeleteModal(!deleteModal) }} className='cursor-pointer' />
                                         </>
                                     }
@@ -141,8 +146,6 @@ const CoursesTable = () => {
                 setCommentModal={setCommentModal}
                 courseId={courseId}
             />
-
-
 
         </>
 

@@ -1,20 +1,22 @@
 import { useEffect, useState } from 'react'
-import { Alert, Button, Row, Table } from 'reactstrap'
+import { Alert, Button, Row, Table, Modal, ModalFooter, ModalHeader, ModalBody, Spinner } from 'reactstrap'
 import { formatDate } from '../../../utility/DateFormatter'
 import { ValidURL } from '../../../utility/ValidUrl'
 import ReactPaginate from 'react-paginate'
 import { Eye, Trash } from 'react-feather'
-import ReplyComment from './ReplyComment'
 import { useDispatch, useSelector } from 'react-redux'
-import { fetchCourseComments, setCourseId } from '../../../redux/coursesSlice'
+import { fetchCourseComments, setCourseId, updateComments } from '../../../redux/coursesSlice'
 import CommentDetail from './CommentDetail'
+import { deleteCourseReplyComment } from './../../../@core/services/courses';
+
+
 
 const AcceptedComments = ({ courseId }) => {
     const [detailModal, setDetailModal] = useState(false)
-    const [commentTitle, setCommentTitle] = useState(null)
     const [commentId, setCommentId] = useState(null)
     const { comments } = useSelector((state) => state.courses)
-    const [replyModal, setReplyModal] = useState(false)
+    const [buttonLoading, setButtonLoading] = useState(false)
+    const [deleteModal, setDeleteModal] = useState(false)
     const dispatch = useDispatch()
     const handlePagination = ({ selected }) => {
         setCurrentPage(selected)
@@ -30,9 +32,25 @@ const AcceptedComments = ({ courseId }) => {
         currentPage * itemsPerPage,
         (currentPage + 1) * itemsPerPage
     )
+    const handleDelete = async () => {
+        setButtonLoading(true)
+        await deleteCourseReplyComment(commentId, setButtonLoading, setDeleteModal)
+        dispatch(updateComments({ commentId: commentId }))
+        setButtonLoading(false)
+        setDeleteModal(false)
+    }
     useEffect(() => {
         handleComments()
     }, [])
+
+    useEffect(() => {
+        const newPageCount = Math.ceil(comments.length / itemsPerPage);
+        if (currentPage >= newPageCount && newPageCount > 0) {
+            setCurrentPage(newPageCount - 1);
+        } else if (newPageCount === 0) {
+            setCurrentPage(0);
+        }
+    }, [comments, currentPage, itemsPerPage])
     return (
         <>
             {
@@ -64,8 +82,8 @@ const AcceptedComments = ({ courseId }) => {
                                     </td>
                                     <td>
                                         <Eye className=' cursor-pointer' onClick={() => { setDetailModal(!detailModal); setCommentId(item.id) }} />
-                                        <Trash className='cursor-pointer' />
-                                        <Button color='primary' onClick={() => { setReplyModal(!replyModal); setCommentTitle(item.title); setCommentId(item.id) }}>پاسخ</Button>
+                                        <Trash className='cursor-pointer mx-1' onClick={() => { setDeleteModal(true); setCommentId(item.id) }} />
+
                                     </td>
                                 </tr>
                             ))
@@ -112,13 +130,23 @@ const AcceptedComments = ({ courseId }) => {
                 courseId={courseId}
             />
 
-            <ReplyComment
-                setReplyModal={setReplyModal}
-                replyModal={replyModal}
-                courseId={courseId}
-                commentId={commentId}
-                commentTitle={commentTitle}
-            />
+
+
+            {/* Delete Modal */}
+            <Modal isOpen={deleteModal} toggle={() => setDeleteModal(!deleteModal)} className='modal-dialog-centered modal-sm'>
+                <ModalHeader toggle={() => setDeleteModal(!deleteModal)}>حذف نظر</ModalHeader>
+                <ModalBody>
+                    آیا برای حذف این نظر مطمعن هستید؟
+                </ModalBody>
+                <ModalFooter className='justify-content-start'>
+                    <Button color='primary ' onClick={handleDelete}>
+                        {buttonLoading ? <Spinner /> : 'بله'}
+                    </Button>
+                    <Button color='danger ' onClick={() => setDeleteModal(!deleteModal)}>
+                        خیر
+                    </Button>
+                </ModalFooter>
+            </Modal>
         </>
     )
 }

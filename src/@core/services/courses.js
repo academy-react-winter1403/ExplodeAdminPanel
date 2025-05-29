@@ -82,7 +82,7 @@ export const addCommentReplyCourse = async (loading, replyModal, obj) => {
     }
 }
 
-export const deleteCourseReplyComment = async (commentId, buttonLoading, deleteModal) => {
+export const deleteCourseReplyComment = async (commentId, buttonLoading = false, deleteModal = false) => {
     try {
         const response = await instance.delete(`/Course/DeleteCourseComment/`, { params: { CourseCommandId: commentId } })
         toast.success(response.message)
@@ -131,3 +131,166 @@ export const addTechnologyForCourse = async (id, techData) => {
         throw error;
     }
 };
+export const getNotAcceptedComments = async (urlParams) => {
+    try {
+        const response = await instance.get('/Course/CommentManagment', { params: urlParams })
+        return response
+    } catch (error) {
+        console.error("Error:", error);
+        throw error;
+    }
+};
+
+export const acceptComment = async (id) => {
+    try {
+        const response = await instance.post(`/Course/AcceptCourseComment?CommentCourseId=${id}`)
+        return response
+    } catch (error) {
+        console.error("Error:", error);
+        throw error;
+    }
+};
+
+export const getCourseById = async (courseId) => {
+    try {
+        const response = await instance.get(`/Course/${courseId}`)
+        return response
+    } catch (error) {
+        console.error("Error:", error);
+        throw error;
+    }
+};
+
+export const getCourseGroups = async (urlParams) => {
+    try {
+        const response = await instance.get(`/CourseGroup/GetCourseGroup`, { params: urlParams })
+        return response
+    } catch (error) {
+        console.error("Error:", error);
+        throw error;
+    }
+};
+
+export const editeCourseGroups = async (obj) => {
+    const formData = new FormData()
+    formData.append('Id', obj.Id)
+    formData.append('GroupName', obj.GroupName)
+    formData.append('CourseId', obj.CourseId)
+    formData.append('GroupCapacity', obj.GroupCapacity)
+
+    try {
+        const response = await instance.put(`/CourseGroup`, formData)
+        return response
+    } catch (error) {
+        console.error("Error:", error);
+        toast.error('ظرفیت بیشتر از 255 تا نمیتواند باشد')
+        throw error;
+    };
+}
+
+
+export const deleteCourseGroup = async (id) => {
+    const formData = new FormData()
+    formData.append('Id', id)
+    try {
+        const response = await instance.delete(`/CourseGroup`, { data: formData })
+        return response
+    } catch (error) {
+        console.error("Error:", error);
+        throw error;
+    };
+}
+
+export const addCourseGroup = async (obj) => {
+    const formData = new FormData()
+    formData.append('GroupName', obj.GroupName)
+    formData.append('CourseId', obj.CourseId)
+    formData.append('GroupCapacity', obj.GroupCapacity)
+    try {
+        const response = await instance.post(`/CourseGroup`, formData)
+        return response
+    } catch (error) {
+        console.error("Error:", error);
+        throw error;
+    };
+}
+
+export const getCourseReserve = async (courseId) => {
+    try {
+        const response = await instance.get(`/CourseReserve/${courseId}`)
+        return response
+    } catch (error) {
+        console.error("Error:", error);
+        throw error;
+    };
+}
+
+export const changeCourseReserve = async (courseId, courseGroupId, studentId) => {
+    try {
+        const response = await instance.post(`/CourseReserve/SendReserveToCourse`, { courseId: courseId, courseGroupId: courseGroupId, studentId: studentId })
+        return response
+    } catch (error) {
+        console.error("Error:", error);
+        throw error;
+    };
+}
+
+export const deleteCourseReserve = async (reservId) => {
+    try {
+        const response = await instance.delete(`/CourseReserve`, {
+            data: { id: reservId }
+        })
+        return response
+    } catch (error) {
+        console.error("Error:", error);
+        throw error;
+    };
+}
+
+export const getCoursePayments = async (courseId) => {
+    try {
+        const response = await instance.get(`/CoursePayment/ListOfWhoIsPay?CourseId=${courseId}`)
+        return response
+    } catch (error) {
+        console.error("Error:", error);
+        throw error;
+    };
+}
+
+export const getCoursePaymentsList = async (courseId) => {
+    try {
+        const response = await instance.get(`/CoursePayment?CourseId=${courseId}`)
+        return response
+    } catch (error) {
+        console.error("Error:", error);
+        throw error;
+    };
+}
+
+export const deleteCoursePayment = async (paymentId) => {
+    const formData = new FormData()
+    formData.append('PaymentId', paymentId)
+    try {
+        const response = await instance.delete(`/CoursePayment`, { data: formData })
+        return response
+    } catch (error) {
+        console.error("Error:", error);
+        throw error;
+    };
+}
+
+export const acceptCoursePayment = async (paymentId) => {
+    const formData = new FormData()
+    formData.append('PaymentId',paymentId )
+    try {
+        const response = await instance.put(`/CoursePayment/Accept`, formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            },
+        });
+        return response
+    } catch (error) {
+        console.error("Error:", error);
+        throw error;
+    };
+}

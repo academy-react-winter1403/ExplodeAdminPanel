@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { courseCommentReplies, courseComments, getAllCourses } from './../@core/services/courses';
+import { courseCommentReplies, courseComments, getAllCourses, getNotAcceptedComments } from './../@core/services/courses';
 
 export const fetchAllCourses = createAsyncThunk(
     "courses/fetchAllCourses",
@@ -7,7 +7,20 @@ export const fetchAllCourses = createAsyncThunk(
         const state = thunkAPI.getState().courses;
         const { courseDtos, totalCount } = await getAllCourses({
             PageNumber: state.currentPage,
-            RowsOfPage: 10
+            RowsOfPage: state.rowsOfPage !== null || state.rowsOfPage !== '' ? state.rowsOfPage : 10,
+            Query: state.query,
+            SortType: 'Active'
+        })
+        return { courseDtos, totalCount }
+    }
+)
+
+
+export const fetchCoursesListData = createAsyncThunk(
+    "courses/fetchCoursesListData",
+    async () => {
+        const { courseDtos, totalCount } = await getAllCourses({
+            RowsOfPage: 20000
         })
         return { courseDtos, totalCount }
     }
@@ -34,6 +47,18 @@ export const fetchCourseComments = createAsyncThunk(
     }
 )
 
+export const fetchCourseNotAcceptedComments = createAsyncThunk(
+    "courses/fetchCourseNotAcceptedComments",
+    async () => {
+        const { comments } = await getNotAcceptedComments({
+            RowsOfPage: 20000,
+            SortType: 'insertDate',
+            Accept: 'false'
+        })
+        return { comments }
+    }
+)
+
 export const coursesSlice = createSlice({
     name: "courses",
     initialState: {
@@ -46,6 +71,14 @@ export const coursesSlice = createSlice({
         commentReplies: [],
         comments: [],
         allComments: [],
+        notAcceptedComments: [],
+        notAcceptedMains: [],
+        notAcceptedReplies: [],
+        rowsOfPage: 10,
+        activeCourses: 0,
+        notActiveCourses: 0,
+        deletedCourses: 0,
+        allCoursesCount: 0
     },
     reducers: {
         setCurrentPage: (state, action) => {
@@ -67,9 +100,9 @@ export const coursesSlice = createSlice({
         setCommentId: (state, action) => {
             state.commentId = action.payload
         },
-        updateCommentReplies: (state, action) => {
+        updateComments: (state, action) => {
             const { commentId } = action.payload
-            state.commentReplies = state.commentReplies.filter((c) => c.id !== commentId)
+            state.comments = state.comments.filter((c) => c.id !== commentId)
         }
         ,
         setDeleteCommentReply: (state, action) => {
@@ -94,7 +127,23 @@ export const coursesSlice = createSlice({
 
             state.allComments = removeReply(state.allComments, commentId);
         },
-        
+        setQuery: (state, action) => {
+            state.query = action.payload
+        },
+        setNotAcceptedReplies: (state, action) => {
+            state.notAcceptedReplies = action.payload
+        },
+        setNotAcceptedMain: (state, action) => {
+            state.notAcceptedMains = action.payload
+        },
+
+        setComments: (state, action) => {
+            const { comment_Id } = action.payload
+            state.comments = state.comments.filter((c) => c.id !== comment_Id)
+        },
+        setRowsOfPage: (state, action) => {
+            state.rowsOfPage = action.payload
+        }
     },
     extraReducers: (builder) => {
         builder
@@ -138,6 +187,19 @@ export const coursesSlice = createSlice({
                 }))
             })
 
+            .addCase(fetchCourseNotAcceptedComments.fulfilled, (state, action) => {
+                state.notAcceptedComments = action.payload.comments;
+                state.notAcceptedMains = action.payload.comments.filter((c) => c.courseId === state.courseId && c.replyCommentId == null)
+                state.notAcceptedReplies = action.payload.comments.filter((c) => c.courseId === state.courseId && c.replyCommentId !== null)
+            })
+
+            .addCase(fetchCoursesListData.fulfilled, (state, action) => {
+                state.activeCourses = action.payload.courseDtos.filter((c) => c.isActive == true && c.isdelete == false).length;
+                state.notActiveCourses = action.payload.courseDtos.filter((c) => c.isActive == false && c.isdelete == false).length;
+                state.deletedCourses = action.payload.courseDtos.filter((c) => c.isdelete == true).length;
+                state.allCoursesCount = action.payload.totalCount
+            })
+
     },
 });
 
@@ -147,7 +209,12 @@ export const {
     courseDeleted,
     setCourseId,
     setCommentId,
-    updateCommentReplies,
+    updateComments,
     setDeleteCommentReply,
+    setQuery,
+    setNotAcceptedReplies,
+    setNotAcceptedMain,
+    setComments,
+    setRowsOfPage
 } = coursesSlice.actions
 export default coursesSlice.reducer;
