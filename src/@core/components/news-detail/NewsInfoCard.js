@@ -36,6 +36,7 @@ import {
 const NewsInfoCard = ({ selectedUser, cardDetail }) => {
   // ** State
   const [show, setShow] = useState(false);
+  const [isActive, setIsActive] = useState(true);
   const [newsCategory, setNewsCategory] = useState([]);
   console.log("detail", cardDetail);
 
@@ -78,15 +79,25 @@ const NewsInfoCard = ({ selectedUser, cardDetail }) => {
     data.append("Active", "true");
     data.append("Id", id);
     const res = await http.put("/News/ActiveDeactiveNews", data);
-    console.log(res)
+    console.log(res);
+    if (res) {
+      toast.success("خبر فعال شد");
+      setIsActive(true);
+    }
   };
-
+  const handleDelete = async (id) => {
+    alert(id);
+  };
   const handleDeActive = async (id) => {
     const data = new FormData();
     data.append("Active", "false");
     data.append("Id", id);
     const res = await http.put("/News/ActiveDeactiveNews", data);
-    console.log(res)
+    console.log(res);
+    if (res) {
+      toast.success("خبر غیرفعال شد");
+      setIsActive(false);
+    }
   };
 
   return (
@@ -197,7 +208,8 @@ const NewsInfoCard = ({ selectedUser, cardDetail }) => {
             <Button color="primary" onClick={() => setShow(true)}>
               ویرایش
             </Button>
-            {cardDetail?.active ? (
+
+            {isActive ? (
               <Button
                 onClick={() => handleDeActive(cardDetail.id)}
                 className="ms-1"
