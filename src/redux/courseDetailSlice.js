@@ -8,7 +8,8 @@ export const courseDetailSlice = createSlice({
         courseReserveList: [],
         coursePaymentsDone: [],
         coursePaymentsNotDone: [],
-        coursePaymentListNotAccept: []
+        coursePaymentListNotAccept: [],
+        courseStatusValue: null
     },
     reducers: {
         setCourseGroups: (state, action) => {
@@ -29,6 +30,9 @@ export const courseDetailSlice = createSlice({
         setCoursePaymentListNotAccept: (state, action) => {
             state.coursePaymentListNotAccept = action.payload
         },
+        setCourseStatusValue: (state, action) => {
+            state.courseStatusValue = action.payload
+        }
     }
 })
 export const {
@@ -38,6 +42,7 @@ export const {
     setCoursePayments,
     setCoursePaymentsDone,
     setCoursePaymentsNotDone,
-    setCoursePaymentListNotAccept
+    setCoursePaymentListNotAccept,
+    setCourseStatusValue
 } = courseDetailSlice.actions
 export default courseDetailSlice.reducer;

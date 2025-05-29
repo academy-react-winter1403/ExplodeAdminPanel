@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { Card, CardBody, Col, Row, Spinner, TabContent, TabPane } from 'reactstrap'
-import { getCourseById, getCourseGroups, getCoursePayments, getCoursePaymentsList, getCourseReserve } from '../@core/services/courses'
+import { getCourseById, getCourseGroups, getCoursePayments, getCoursePaymentsList, getCourseReserve, getCourseStatusList } from '../@core/services/courses'
 import { useDispatch, useSelector } from 'react-redux'
-import { setCourseGroups, setCoursePaymentListNotAccept, setCoursePayments, setCoursePaymentsDone, setCoursePaymentsNotDone, setCourseReserveList, setCourseStatus } from '../redux/courseDetailSlice'
+import { setCourseGroups, setCoursePaymentListNotAccept, setCoursePaymentsDone, setCoursePaymentsNotDone, setCourseReserveList, setCourseStatus, setCourseStatusValue } from '../redux/courseDetailSlice'
 import CourseGroups from '../components/CoursePage/CourseDetail/CourseGroups'
 import CourseInfo from '../components/CoursePage/CourseDetail/CourseInfo'
 import Tabs from './../components/CoursePage/CourseDetail/Tabs';
@@ -15,12 +15,12 @@ import PaymentNotAccept from '../components/CoursePage/CourseDetail/NotAcceptPay
 
 const CourseDetail = () => {
   const { id: courseId } = useParams()
-  console.log(courseId)
   const [courseData, setCourseData] = useState({})
   const [loading, setLoading] = useState(false)
   const [activeTab, setActiveTab] = useState('1')
+  const [statusList, setStatusList] = useState([])
   const dispatch = useDispatch()
-  const { courseGroups, courseReserveList, coursePaymentsDone, coursePaymentsNotDone,coursePaymentListNotAccept } = useSelector((state) => state.courseDetails)
+  const { courseGroups, courseReserveList, coursePaymentsDone, coursePaymentsNotDone, coursePaymentListNotAccept } = useSelector((state) => state.courseDetails)
 
   const fetchCourseData = async () => {
     setLoading(true)
@@ -29,6 +29,9 @@ const CourseDetail = () => {
     const reserveResult = await getCourseReserve(courseId)
     const allPayments = await getCoursePayments(courseId)
     const notAcceptedPayment = await getCoursePaymentsList(courseId)
+    const allStatus = await getCourseStatusList()
+    setStatusList(allStatus)
+    dispatch(setCourseStatusValue(result.courseStatusName))
     dispatch(setCourseReserveList(reserveResult))
     dispatch(setCourseGroups(courseGroups))
     dispatch(setCourseStatus(result.isActive))
@@ -71,7 +74,7 @@ const CourseDetail = () => {
                   <h4>توضیحات دوره :</h4>
                   {courseData.describe}
                 </div>
-                <CourseInfo courseData={courseData} courseId={courseId} />
+                <CourseInfo courseData={courseData} courseId={courseId} allStatus={statusList} />
                 <CourseGroups courseGroups={courseGroups} courseId={courseId} />
               </Col>
             </CardBody>
@@ -100,7 +103,7 @@ const CourseDetail = () => {
                 </TabPane>
 
                 <TabPane tabId='5'>
-                <PaymentNotAccept payments={coursePaymentListNotAccept} courseId={courseId}/>
+                  <PaymentNotAccept payments={coursePaymentListNotAccept} courseId={courseId} />
                 </TabPane>
               </TabContent>
 

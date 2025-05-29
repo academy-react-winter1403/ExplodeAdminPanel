@@ -281,13 +281,36 @@ export const deleteCoursePayment = async (paymentId) => {
 
 export const acceptCoursePayment = async (paymentId) => {
     const formData = new FormData()
-    formData.append('PaymentId',paymentId )
+    formData.append('PaymentId', paymentId)
     try {
         const response = await instance.put(`/CoursePayment/Accept`, formData, {
             headers: {
                 'Content-Type': 'multipart/form-data',
             },
         });
+        return response
+    } catch (error) {
+        console.error("Error:", error);
+        throw error;
+    };
+}
+
+export const getCourseStatusList = async (courseId) => {
+    try {
+        const response = await instance.get(`/Status`)
+        return response
+    } catch (error) {
+        console.error("Error:", error);
+        throw error;
+    };
+}
+
+export const changeCourseStatus = async (courseId, statusId) => {
+    const formData = new FormData()
+    formData.append('CourseId', courseId)
+    formData.append('StatusId', statusId)
+    try {
+        const response = await instance.put(`/Course/UpdateCourseStatus`, formData)
         return response
     } catch (error) {
         console.error("Error:", error);

@@ -8,7 +8,6 @@ import { selectThemeColors } from '@utils'
 import { useDispatch, useSelector } from 'react-redux'
 import { setCoursePaymentsNotDone, setCourseReserveList } from '../../../redux/courseDetailSlice'
 import { changeCourseReserve, deleteCourseReserve } from '../../../@core/services/courses'
-import toast from 'react-hot-toast'
 const Reserve = ({ courseId, courseReserveList, courseGroups }) => {
     let notAccepted = courseReserveList.filter((r) => (r.accept === false))
     const [buttonLoading, setButtonLoading] = useState(false)
