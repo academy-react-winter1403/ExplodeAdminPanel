@@ -118,6 +118,18 @@ export const addNewCourse = async (formData, setLoading) => {
     }
 };
 
+export const updateCourseInfo = async (formData, setLoading) => {
+    try {
+        console.log('Request')
+        const response = await instance.put('/Course', formData)
+        return response
+    } catch (error) {
+        console.error("Error:", error);
+        setLoading(false)
+        throw error;
+    }
+};
+
 export const addTechnologyForCourse = async (id, techData) => {
     try {
         const response = await instance.post('/Course/AddCourseTechnology', techData, {

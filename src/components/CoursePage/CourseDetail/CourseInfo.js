@@ -6,6 +6,7 @@ import { setCourseStatus, setCourseStatusValue } from '../../../redux/courseDeta
 import { Controller, useForm } from 'react-hook-form'
 import Select from 'react-select'
 import { selectThemeColors } from '@utils'
+import { NavLink } from 'react-router-dom';
 const CourseInfo = ({ courseData, courseId, allStatus }) => {
     allStatus = allStatus.map((item) => (
         { value: item.id, label: item.statusName }
@@ -76,6 +77,7 @@ const CourseInfo = ({ courseData, courseId, allStatus }) => {
                         <th>وضعیت کلاس</th>
                         <th>سطح کلاس</th>
                         <th>تغییر وضعیت کلاس</th>
+                        <th> ویرایش دوره</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -83,6 +85,8 @@ const CourseInfo = ({ courseData, courseId, allStatus }) => {
                         <td>{courseStatusValue}</td>
                         <td>{courseData.courseLevelName}</td>
                         <td><Button color='success' onClick={() => setStatusModal(true)}>تغییر</Button></td>
+                        <td><NavLink to={`/editcourse/${courseId}`}><Button color='primary'>ویرایش</Button></NavLink></td>
+
                     </tr>
                 </tbody>
             </Table>

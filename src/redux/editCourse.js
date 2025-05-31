@@ -1,19 +1,13 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { addNewCourse, getCourseInfoForCreate } from "../@core/services/courses";
+import { updateCourseInfo } from "../@core/services/courses";
 
-export const fetchCourseInfo = createAsyncThunk(
-    "addCourse/fetchCourseInfo",
-    async () => {
-        const { courseTypeDtos, termDtos, classRoomDtos, courseLevelDtos, teachers, technologyDtos } = await getCourseInfoForCreate()
-        return { courseTypeDtos, termDtos, classRoomDtos, courseLevelDtos, teachers, technologyDtos }
-    }
-)
 
-export const fetchAddCourse = createAsyncThunk(
-    "addCourse/fetchAddCourse",
+export const fetchEditCourse = createAsyncThunk(
+    "editCourse/fetchEditCourse",
     async (setLoading, thunkAPI) => {
-        const state = thunkAPI.getState().addCourse;
+        const state = thunkAPI.getState().editCourse;
         const formData = new FormData()
+        formData.append('Id', state.courseId)
         formData.append('Title', state.courseTitle)
         formData.append('Describe', state.courseDescribe)
         formData.append('MiniDescribe', state.courseMiniDescribe)
@@ -29,21 +23,15 @@ export const fetchAddCourse = createAsyncThunk(
         formData.append('StartTime', state.courseStartTime)
         formData.append('EndTime', state.courseEndTime)
         formData.append('Image', state.courseImage)
-        const { id } = await addNewCourse(formData, setLoading)
+        const { id } = await updateCourseInfo(formData, setLoading)
         return { id }
     }
 )
 
-
-export const addCourseSlice = createSlice({
-    name: "addCourse",
+const editCourseSlice = createSlice({
+    name: 'editCourse',
     initialState: {
-        courseTypes: [],
-        courseTerms: [],
-        courseClassRooms: [],
-        courseLevels: [],
-        courseTeachers: [],
-        courseTechnologies: [],
+        basicInfo: [],
         courseType: null,
         courseTerm: null,
         courseClassRoom: null,
@@ -57,11 +45,14 @@ export const addCourseSlice = createSlice({
         courseCost: null,
         courseStartTime: '',
         courseEndTime: '',
-        courseUUID: null,
         courseImage: false,
         courseId: null,
+        courseUUID: null
     },
     reducers: {
+        setBasicInfo: (state, action) => {
+            state.basicInfo = action.payload
+        },
         setCourseType: (state, action) => {
             state.courseType = action.payload;
         },
@@ -98,9 +89,6 @@ export const addCourseSlice = createSlice({
         setCourseEndTime: (state, action) => {
             state.courseEndTime = action.payload;
         },
-        setCourseUUID: (state, action) => {
-            state.courseUUID = action.payload;
-        },
         setCourseImage: (state, action) => {
             state.courseImage = action.payload;
         },
@@ -109,26 +97,15 @@ export const addCourseSlice = createSlice({
         },
         setCourseCapacity: (state, action) => {
             state.courseCapacity = action.payload;
-        }
-    },
-    extraReducers: (builder) => {
-        builder
-            .addCase(fetchCourseInfo.fulfilled, (state, action) => {
-                state.courseTypes = action.payload.courseTypeDtos.map((type) => ({ value: type.id, label: type.typeName }));
-                state.courseTerms = action.payload.termDtos.map((term) => ({ value: term.id, label: term.termName }));
-                state.courseClassRooms = action.payload.classRoomDtos.map((classRoom) => ({ value: classRoom.id, label: classRoom.classRoomName }));
-                state.courseLevels = action.payload.courseLevelDtos.map((courseLevel) => ({ value: courseLevel.id, label: courseLevel.levelName }));
-                state.courseTeachers = action.payload.teachers.map((teacher) => ({ value: teacher.teacherId, label: teacher.fullName }));
-                state.courseTechnologies = action.payload.technologyDtos.map((technology) => ({ value: technology.id, label: technology.techName }));
-            })
-
-            .addCase(fetchAddCourse.fulfilled, (state, action) => {
-                state.courseId = action.payload.id
-            })
-    },
-});
+        },
+        setCourseUUID: (state, action) => {
+            state.courseUUID = action.payload;
+        },
+    }
+})
 
 export const {
+    setBasicInfo,
     setCourseType,
     setCourseTerm,
     setCourseClassRoom,
@@ -141,10 +118,9 @@ export const {
     setCourseCost,
     setCourseStartTime,
     setCourseEndTime,
-    setCourseUUID,
     setCourseImage,
     setCourseId,
     setCourseCapacity,
-} = addCourseSlice.actions
-
-export default addCourseSlice.reducer;
+    setCourseUUID
+} = editCourseSlice.actions
+export default editCourseSlice.reducer

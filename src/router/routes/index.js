@@ -37,6 +37,7 @@ const Sample = lazy(() => import("../../pages/Sample"));
 const UsersDetails = lazy(() => import("../../pages/UsersDetails"));
 const CoursesList = lazy(() => import("../../pages/CoursesList"));
 const CourseDetail = lazy(() => import("../../pages/CourseDetail"));
+const EditCourse = lazy(() => import("../../pages/EditCourse"));
 // ** Merge Routes
 const Routes = [
   {
@@ -63,6 +64,10 @@ const Routes = [
   {
     path: '/coursedetail/:id',
     element: <CourseDetail />
+  },
+  {
+    path: '/editcourse/:id',
+    element: <EditCourse />
   },
   {
     path: "/login",

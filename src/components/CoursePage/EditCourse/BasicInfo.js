@@ -16,36 +16,19 @@ import Flatpickr from 'react-flatpickr'
 // ** Reactstrap Imports
 import { Form, Label, Input, Row, Col, Button, FormFeedback } from 'reactstrap'
 import { useDispatch, useSelector } from 'react-redux'
-import {
-    fetchCourseInfo,
-    setCourseCapacity,
-    setCourseClassRoom,
-    setCourseCost,
-    setCourseEndTime,
-    setCourseLevel,
-    setCourseSessionNumber,
-    setCourseStartTime,
-    setCourseTeacher,
-    setCourseTerm,
-    setCourseType
-} from '../../redux/addCourseSlice'
+import { setCourseCapacity, setCourseClassRoom, setCourseCost, setCourseEndTime, setCourseLevel, setCourseSessionNumber, setCourseStartTime, setCourseTeacher, setCourseTerm, setCourseType } from '../../../redux/editCourse'
 
-const CourseBasicInfo = ({ stepper }) => {
+
+const BasicInfo = ({ stepper, courseData }) => {
     const [startPicker, setStartPicker] = useState(new Date())
     const [endPicker, setEndPicker] = useState(new Date())
     const dispatch = useDispatch()
-    const {
-        courseTypes,
-        courseTerms,
-        courseClassRooms,
-        courseLevels,
-        courseTeachers
-    } = useSelector((state) => state.addCourse);
-
+    const { basicInfo } = useSelector((state) => state.editCourse)
+    console.log(basicInfo)
     const fieldsSchema = yup.object().shape({
-        capacity: yup.string().required('تعداد نفرات را وارد کنید'),
-        sessionNumber: yup.string().required('تعداد جلسات را وارد کنید'),
-        coursePrice: yup.string().required('قیمت دوره را وارد کنید'),
+        capacity: yup.string().nullable().required('تعداد نفرات را وارد کنید'),
+        sessionNumber: yup.string().nullable().required('تعداد جلسات را وارد کنید'),
+        coursePrice: yup.string().nullable().required('قیمت دوره را وارد کنید'),
 
         courseType: yup.object({
             value: yup.string().required('نوع دوره را انتخاب کنید'),
@@ -88,6 +71,16 @@ const CourseBasicInfo = ({ stepper }) => {
             .required('تاریخ پایان را انتخاب کنید'),
     });
 
+    const defaultclassRoomList = basicInfo?.classRoomDtos?.find((c) => c.classRoomName.includes(courseData.courseClassRoomName))
+    const defaultcourseLevelInfo = basicInfo?.courseLevelDtos?.find((l) => l.levelName.includes(courseData.courseLevelName))
+    const defaultcourseType = basicInfo?.courseTypeDtos?.find((t) => t.typeName.includes(courseData.courseTypeName))
+    const defaultcourseTeacherInfo = basicInfo?.teachers?.find((ct) => ct.fullName?.replace(/-+/g, ' ').includes(courseData.teacherName))
+
+    const classRoomList = basicInfo?.classRoomDtos?.map((item) => ({ value: item.id, label: item.classRoomName }))
+    const courseTypeList = basicInfo?.courseTypeDtos?.map((item) => ({ value: item.id, label: item.typeName }))
+    const courseTermList = basicInfo?.termDtos?.map((item) => ({ value: item.id, label: item.termName }))
+    const courseLevelList = basicInfo?.courseLevelDtos?.map((item) => ({ value: item.id, label: item.levelName }))
+    const courseTeacherList = basicInfo?.teachers?.map((item) => ({ value: item.teacherId, label: item.fullName }))
     const {
         control,
         handleSubmit,
@@ -95,16 +88,26 @@ const CourseBasicInfo = ({ stepper }) => {
     } = useForm({
         resolver: yupResolver(fieldsSchema),
         defaultValues: {
-            courseType: null,
-            termType: null,
-            classRoom: null,
-            courseLevel: null,
-            courseTeacher: null,
+            capacity: null,
+            sessionNumber: null,
+            coursePrice: courseData.cost,
             startDatePicker: null,
-            endDatePicker: null
+            endDatePicker: null,
+            courseType: { value: defaultcourseType?.id, label: defaultcourseType?.typeName },
+            termType: null,
+            classRoom: { value: defaultclassRoomList?.id, label: defaultclassRoomList?.classRoomName },
+            courseLevel: { value: defaultcourseLevelInfo?.id, label: defaultcourseLevelInfo?.levelName },
+            courseTeacher: { value: defaultcourseTeacherInfo?.teacherId, label: defaultcourseTeacherInfo?.fullName },
+            startDatePicker: courseData.startTime,
+            endDatePicker: courseData.endTime,
         }
     })
-
+    const toLocalISOString = (date) => {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}T00:00:00.000Z`;
+    };
 
     const onSubmit = (data) => {
         dispatch(setCourseCapacity(data.capacity))
@@ -115,15 +118,10 @@ const CourseBasicInfo = ({ stepper }) => {
         dispatch(setCourseClassRoom(data.classRoom?.value || null))
         dispatch(setCourseLevel(data.courseLevel?.value || null))
         dispatch(setCourseTeacher(data.courseTeacher?.value || null))
-        dispatch(setCourseStartTime(data.startDatePicker ? new Date(data.startDatePicker).toISOString() : null))
-        dispatch(setCourseEndTime(data.endDatePicker ? new Date(data.endDatePicker).toISOString() : null))
+        dispatch(setCourseStartTime(data.startDatePicker ? toLocalISOString(data.startDatePicker) : null))
+        dispatch(setCourseEndTime(data.endDatePicker ? toLocalISOString(data.endDatePicker) : null))
         stepper.next()
-
     };
-
-    useEffect(() => {
-        dispatch(fetchCourseInfo());
-    }, [dispatch]);
 
     return (
         <Fragment>
@@ -148,6 +146,7 @@ const CourseBasicInfo = ({ stepper }) => {
                                     {...field}
                                 />
                             )}
+
                         />
                         {errors.capacity && (
                             <FormFeedback style={{ display: 'block' }}>
@@ -172,7 +171,7 @@ const CourseBasicInfo = ({ stepper }) => {
                                         id="course-type"
                                         className={`react-select ${error ? 'is-invalid' : ''}`}
                                         classNamePrefix='select'
-                                        options={courseTypes}
+                                        options={courseTypeList}
                                         placeholder="انتخاب کنید"
                                     />
                                     {error && (
@@ -224,7 +223,7 @@ const CourseBasicInfo = ({ stepper }) => {
                                         id="term-type"
                                         className={`react-select ${error ? 'is-invalid' : ''}`}
                                         classNamePrefix='select'
-                                        options={courseTerms}
+                                        options={courseTermList}
                                         placeholder="انتخاب کنید"
                                     />
                                     {error && (
@@ -253,7 +252,7 @@ const CourseBasicInfo = ({ stepper }) => {
                                         id="classRoom"
                                         className={`react-select ${error ? 'is-invalid' : ''}`}
                                         classNamePrefix='select'
-                                        options={courseClassRooms}
+                                        options={classRoomList}
                                         placeholder="انتخاب کنید"
                                     />
                                     {error && (
@@ -282,7 +281,7 @@ const CourseBasicInfo = ({ stepper }) => {
                                         id="courseLevel"
                                         className={`react-select ${error ? 'is-invalid' : ''}`}
                                         classNamePrefix='select'
-                                        options={courseLevels}
+                                        options={courseLevelList}
                                         placeholder="انتخاب کنید"
                                     />
                                     {error && (
@@ -312,7 +311,7 @@ const CourseBasicInfo = ({ stepper }) => {
                                         id="courseTeacher"
                                         className={`react-select ${error ? 'is-invalid' : ''}`}
                                         classNamePrefix='select'
-                                        options={courseTeachers}
+                                        options={courseTeacherList}
                                         placeholder="انتخاب کنید"
                                     />
                                     {error && (
@@ -417,4 +416,4 @@ const CourseBasicInfo = ({ stepper }) => {
     )
 }
 
-export default CourseBasicInfo
+export default BasicInfo

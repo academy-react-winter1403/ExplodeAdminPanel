@@ -8,10 +8,9 @@ import AddTechnology from './AddTechnology'
 const AddCourse = () => {
     // ** Ref
     const ref = useRef(null)
-    
     // ** State
     const [stepper, setStepper] = useState(null)
-console.log(stepper)
+
     const steps = [
         {
             id: 'basic-information',
