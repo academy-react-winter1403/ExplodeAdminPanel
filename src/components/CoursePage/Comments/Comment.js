@@ -9,7 +9,7 @@ import { setCourseId } from '../../../redux/addCourseSlice'
 import { deleteCourseReplyComment } from '../../../@core/services/courses'
 import ReplyComment from './ReplyComment'
 
-const Comment = ({ comment, onLoadReplies }) => {
+const Comment = ({ comment, onLoadReplies, isBlogs }) => {
     const dispatch = useDispatch()
     const [replyCommentId, setReplyCommentId] = useState(null)
     const [deleteModal, setDeleteModal] = useState(false)
@@ -33,26 +33,26 @@ const Comment = ({ comment, onLoadReplies }) => {
                         <Col sm='6' className='d-flex align-items-center flex-wrap'>
                             <Avatar size={'lg'} img={comment?.pictureAddress} className='me-75' />
                             <div className='me-1'>
-                                <div className='me-10'>{comment?.author}</div>
+                                <div className='me-10'>{isBlogs ? comment?.autor : comment?.author}</div>
                                 <div><h4>{comment?.title}</h4></div>
                             </div>
 
                         </Col>
                         <Col sm='6' className='d-flex justify-content-end align-items-center'>
 
-                            <span className='mx-1'>{formatDate(comment?.insertDate)}</span>
+                            <span className='mx-1'>{isBlogs ? formatDate(comment?.inserDate) : formatDate(comment?.insertDate)}</span>
                             {
-                                comment.parentId !== notChildren && <Trash className='cursor-pointer me-1' onClick={() => { setReplyCommentId(comment?.id), setDeleteModal(true) }} />
+                                comment?.parentId !== notChildren && <Trash className='cursor-pointer me-1' onClick={() => { setReplyCommentId(comment?.id), setDeleteModal(true) }} />
                             }
                             {
-                                comment?.acceptReplysCount > 0 && comment.parentId !== notChildren && <ArrowDownCircle className='cursor-pointer' onClick={async () => { dispatch(setCommentId(comment?.id)); dispatch(setCourseId(courseId)); onLoadReplies(comment.id) }} />
+                                (isBlogs ? comment?.replyCount : comment?.acceptReplysCount > 0) && comment.parentId !== notChildren && <ArrowDownCircle className='cursor-pointer' onClick={async () => { dispatch(setCommentId(comment?.id)); dispatch(setCourseId(courseId)); onLoadReplies(comment.id) }} />
                             }
-                            <span style={{marginLeft:'10px',marginRight:'10px'}}>تعداد لایک  {comment?.likeCount}</span>
+                            <span style={{ marginLeft: '10px', marginRight: '10px' }}>تعداد لایک  {comment?.likeCount}</span>
 
                             <span>تعداد دیسلایک  {comment?.disslikeCount}</span>
                         </Col>
                         <Col sm='12'>
-                            <Button color='primary' style={{width:'100%',marginTop:'10px'}} onClick={() => { setReplyCommentId(comment.id), setReplyModal(true), setCommentTitle(comment.title) }}>پاسخ</Button>
+                            <Button color='primary' style={{ width: '100%', marginTop: '10px' }} onClick={() => { setReplyCommentId(comment.id), setReplyModal(true), setCommentTitle(comment.title) }}>پاسخ</Button>
                         </Col>
                     </CardHeader>
                     <CardBody>
@@ -62,10 +62,11 @@ const Comment = ({ comment, onLoadReplies }) => {
 
                         {comment?.replies?.length > 0 && (
                             comment?.replies.map((reply) => (
-                                <Comment
-                                    key={reply.id}
-                                    comment={reply}
-                                    onLoadReplies={onLoadReplies}
+                                < Comment
+                                    key = { reply.id }
+                                    comment = { reply }
+                                    onLoadReplies = { onLoadReplies }
+                                    isBlogs={isBlogs}
                                 />
                             ))
                         )}

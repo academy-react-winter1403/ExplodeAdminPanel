@@ -5,22 +5,38 @@ import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchCourseCommentReplies, setCommentId, setCourseId } from '../../../redux/coursesSlice';
 import Comment from './Comment';
+import { fetchBlogCommentReplies, fetchBlogComments, setBlogCommentId } from '../../../redux/blogSlice';
 
-const CommentDetail = ({ detailModal, setDetailModal, commentId, courseId, comments }) => {
+const CommentDetail = ({ detailModal, setDetailModal, commentId, courseId, comments, isBlogs }) => {
     const comment = comments.find((c) => c.id == commentId)
-    const { allComments } = useSelector((state) => state.courses)
+    const allComments = isBlogs ? useSelector((state) => state.blogs.allComments) : useSelector((state) => state.courses.allComments)
     const singleComment = allComments.find((c) => c.id === commentId)
     const dispatch = useDispatch()
 
     const handleLoadReplies = () => {
-        dispatch(fetchCourseCommentReplies());
+        if (isBlogs) {
+            dispatch(fetchBlogComments())
+            dispatch(fetchBlogCommentReplies())
+        }
+        else {
+            dispatch(fetchCourseCommentReplies())
+            dispatch(fetchCourseCommentReplies())
+        }
     };
     useEffect(() => {
-        if (detailModal && commentId && courseId) {
-            dispatch(setCourseId(courseId))
-            dispatch(setCommentId(commentId))
-            dispatch(fetchCourseCommentReplies())
-            dispatch(setCourseId(courseId))
+        if (isBlogs) {
+            if (detailModal && commentId) {
+                dispatch(setBlogCommentId(commentId))
+                dispatch(fetchBlogCommentReplies())
+            }
+        }
+        else {
+            if (detailModal && commentId && courseId) {
+                dispatch(setCourseId(courseId))
+                dispatch(setCommentId(commentId))
+                dispatch(fetchCourseCommentReplies())
+                dispatch(setCourseId(courseId))
+            }
         }
     }, [detailModal, commentId, courseId])
     return (
@@ -35,6 +51,7 @@ const CommentDetail = ({ detailModal, setDetailModal, commentId, courseId, comme
                                 comment={singleComment}
                                 courseId={courseId}
                                 onLoadReplies={handleLoadReplies}
+                                isBlogs={isBlogs}
                             />
                         </Col>
                     </Row>

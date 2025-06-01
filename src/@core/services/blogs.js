@@ -1,15 +1,48 @@
-// import toast from 'react-hot-toast';
-// import instance from '../axiosInstance';
+import toast from 'react-hot-toast';
+import instance from '../axiosInstance';
 
-// export const getBlogsList = async (urlParams) => {
-//   try {
-//     const response = await instance.get('/News', { params: urlParams });
-//     return response;
-//   } catch (error) {
-//     console.error('Error:', error);
-//     throw error;
-//   }
-// };
+export const getBlogsList = async (urlParams) => {
+    try {
+        const response = await instance.get('/News/AdminNewsFilterList', { params: urlParams });
+        return response;
+    } catch (error) {
+        console.error('Error:', error);
+        throw error;
+    }
+};
+
+export const deleteBlog = async (blogId, status) => {
+    const formData = new FormData()
+    formData.append('Active', status)
+    formData.append('Id', blogId)
+    try {
+        const response = await instance.put('/News/ActiveDeactiveNews', formData);
+        return response;
+    } catch (error) {
+        console.error('Error:', error);
+        throw error;
+    }
+};
+
+export const getBlogsReplies = async (commentId) => {
+    try {
+        const response = await instance.get('/News/GetRepliesComments', { params: { Id: commentId } });
+        return response;
+    } catch (error) {
+        console.error('Error:', error);
+        throw error;
+    }
+};
+
+export const getBlogsComments = async (id) => {
+    try {
+        const response = await instance.get('/News/GetNewsComments', { params: { NewsId: id } });
+        return response;
+    } catch (error) {
+        console.error('Error:', error);
+        throw error;
+    }
+};
 
 // export const getMyFavoriteBlogs = async (urlParams) => {
 //   try {

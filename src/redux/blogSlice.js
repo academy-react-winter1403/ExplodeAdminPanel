@@ -1,49 +1,44 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { courseCommentReplies, courseComments, getAllCourses, getNotAcceptedComments } from './../@core/services/courses';
+import { courseComments, getNotAcceptedComments } from './../@core/services/courses';
+import { getBlogsComments, getBlogsList, getBlogsReplies } from "../@core/services/blogs";
 
-export const fetchAllCourses = createAsyncThunk(
-    "courses/fetchAllCourses",
+export const fetchBlogs = createAsyncThunk(
+    "blogs/fetchBlogs",
     async (_, thunkAPI) => {
-        const state = thunkAPI.getState().courses;
-        const { courseDtos, totalCount } = await getAllCourses({
-            PageNumber: state.currentPage,
+
+        const state = thunkAPI.getState().blogs;
+        const { news, totalCount } = await getBlogsList({
+            PageNumber: state.currentPageBlog,
             RowsOfPage: state.rowsOfPage !== null || state.rowsOfPage !== '' ? state.rowsOfPage : 10,
-            Query: state.query,
+            Query: state.blogQuery ? state.blogQuery : null,
             SortType: 'DESC',
-            SortingCol:'lastUpdate'
+            SortingCol: 'insertDate',
+            IsActive: state.blogsStatus
         })
-        return { courseDtos, totalCount }
-    }
-)
-
-
-export const fetchCoursesListData = createAsyncThunk(
-    "courses/fetchCoursesListData",
-    async () => {
-        const { courseDtos, totalCount } = await getAllCourses({
-            RowsOfPage: 20000
-        })
-        return { courseDtos, totalCount }
+        return { news, totalCount }
     }
 )
 
 
 
-export const fetchCourseCommentReplies = createAsyncThunk(
-    "courses/fetchCourseCommentReplies",
+export const fetchBlogCommentReplies = createAsyncThunk(
+    "blogs/fetchBlogCommentReplies",
+    
     async (_, thunkAPI) => {
-        const state = thunkAPI.getState().courses;
-        const response = await courseCommentReplies(state.courseId, state.commentId);
+        console.log('response')
+        const state = thunkAPI.getState().blogs;
+        const response = await getBlogsReplies(state.commentId);
+        console.log(response)
         const commentId = state.commentId
         return { commentId, replies: response };
     }
 );
 
-export const fetchCourseComments = createAsyncThunk(
-    "courses/fetchCourseComments",
+export const fetchBlogComments = createAsyncThunk(
+    "blogs/fetchBlogComments",
     async (_, thunkAPI) => {
-        const state = thunkAPI.getState().courses;
-        const result = await courseComments(state.courseId)
+        const state = thunkAPI.getState().blogs;
+        const result = await getBlogsComments(state.blogId)
         return result
     }
 )
@@ -60,14 +55,15 @@ export const fetchCourseNotAcceptedComments = createAsyncThunk(
     }
 )
 
-export const coursesSlice = createSlice({
-    name: "courses",
+export const blogSlice = createSlice({
+    name: "blogs",
     initialState: {
-        courses: [],
-        totalCount: 0,
-        currentPage: 1,
-        loading: false,
-        courseId: null,
+        blogs: [],
+        blogsStatus: true,
+        activeTotalCount: 0,
+        currentPageBlog: 1,
+        blogId: null,
+        blogQuery: null,
         commentId: null,
         commentReplies: [],
         comments: [],
@@ -75,30 +71,24 @@ export const coursesSlice = createSlice({
         notAcceptedComments: [],
         notAcceptedMains: [],
         notAcceptedReplies: [],
-        rowsOfPage: 10,
+        blogRowsOfPage: 10,
         activeCourses: 0,
         notActiveCourses: 0,
-        deletedCourses: 0,
-        allCoursesCount: 0
     },
     reducers: {
-        setCurrentPage: (state, action) => {
-            state.currentPage = action.payload;
+        setBlogsCurrentPage: (state, action) => {
+            state.currentPageBlog = action.payload
         },
-        updateCourseStatus: (state, action) => {
-            const { id, status } = action.payload
-            const course = state.courses.find(c => c.courseId === id)
-            course.isActive = status
+        setBlogQuery: (state, action) => {
+            state.blogQuery = action.payload
         },
-        courseDeleted: (state, action) => {
-            const { id } = action.payload
-            const course = state.courses.find(c => c.courseId === id)
-            course.isdelete = true
+        setBlogStatus: (state, action) => {
+            state.blogsStatus = action.payload
         },
-        setCourseId: (state, action) => {
-            state.courseId = action.payload
+        setBlogId: (state, action) => {
+            state.blogId = action.payload
         },
-        setCommentId: (state, action) => {
+        setBlogCommentId: (state, action) => {
             state.commentId = action.payload
         },
         updateComments: (state, action) => {
@@ -142,18 +132,12 @@ export const coursesSlice = createSlice({
             const { comment_Id } = action.payload
             state.comments = state.comments.filter((c) => c.id !== comment_Id)
         },
-        setRowsOfPage: (state, action) => {
-            state.rowsOfPage = action.payload
-        }
+
     },
     extraReducers: (builder) => {
         builder
-            .addCase(fetchAllCourses.fulfilled, (state, action) => {
-                state.courses = action.payload.courseDtos;
-                state.totalCount = action.payload.totalCount
-            })
 
-            .addCase(fetchCourseCommentReplies.fulfilled, (state, action) => {
+            .addCase(fetchBlogCommentReplies.fulfilled, (state, action) => {
                 const { commentId, replies } = action.payload;
 
                 const addReplies = (comments, parentId, newReplies) => {
@@ -180,7 +164,7 @@ export const coursesSlice = createSlice({
                 state.allComments = addReplies(state.allComments, commentId, replies);
             })
 
-            .addCase(fetchCourseComments.fulfilled, (state, action) => {
+            .addCase(fetchBlogComments.fulfilled, (state, action) => {
                 state.comments = action.payload;
                 state.allComments = action.payload.map((comment) => ({
                     ...comment,
@@ -194,28 +178,20 @@ export const coursesSlice = createSlice({
                 state.notAcceptedReplies = action.payload.comments.filter((c) => c.courseId === state.courseId && c.replyCommentId !== null)
             })
 
-            .addCase(fetchCoursesListData.fulfilled, (state, action) => {
-                state.activeCourses = action.payload.courseDtos.filter((c) => c.isActive == true && c.isdelete == false).length;
-                state.notActiveCourses = action.payload.courseDtos.filter((c) => c.isActive == false && c.isdelete == false).length;
-                state.deletedCourses = action.payload.courseDtos.filter((c) => c.isdelete == true).length;
-                state.allCoursesCount = action.payload.totalCount
+            .addCase(fetchBlogs.fulfilled, (state, action) => {
+                state.blogs = action.payload.news
+                state.activeTotalCount = action.payload.totalCount
             })
+
 
     },
 });
 
 export const {
-    setCurrentPage,
-    updateCourseStatus,
-    courseDeleted,
-    setCourseId,
-    setCommentId,
-    updateComments,
-    setDeleteCommentReply,
-    setQuery,
-    setNotAcceptedReplies,
-    setNotAcceptedMain,
-    setComments,
-    setRowsOfPage
-} = coursesSlice.actions
-export default coursesSlice.reducer;
+    setBlogsCurrentPage,
+    setBlogQuery,
+    setBlogStatus,
+    setBlogId,
+    setBlogCommentId
+} = blogSlice.actions
+export default blogSlice.reducer;

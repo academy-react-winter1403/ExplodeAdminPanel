@@ -16,6 +16,7 @@ const PaymentNotAccept = ({ payments, courseId }) => {
     const [loading, setloading] = useState(false)
     const [secondLoading, setSecondLoading] = useState(false)
     const dispatch = useDispatch()
+    const [itemId, setItemId] = useState(null)
     const currentAccepted = payments?.slice(
         currentPage * itemsPerPage,
         (currentPage + 1) * itemsPerPage
@@ -84,11 +85,13 @@ const PaymentNotAccept = ({ payments, courseId }) => {
                                     <td>{item.studentName}</td>
                                     <td>{item.groupName}</td>
                                     <td>
-                                        <Button style={{ padding: '2px', marginLeft: '10px' }} color='success' onClick={() => { handleAccept(item.id, item.studentName, item.groupName) }}>
-                                            {loading ? <Spinner /> : <Check />}
+                                        <Button style={{ padding: '2px', marginLeft: '10px' }} color='success' onClick={() => { handleAccept(item.id, item.studentName, item.groupName); setItemId(item.id) }}>
+                                            {
+                                                item.id == itemId && loading ? <Spinner /> : <Check />
+                                            }
                                         </Button>
-                                        <Button style={{ padding: '2px' }} color='danger' onClick={() => { handleDelete(item.id) }}>
-                                            {secondLoading ? <Spinner /> : <X />}
+                                        <Button style={{ padding: '2px' }} color='danger' onClick={() => { handleDelete(item.id); setItemId(item.id) }}>
+                                            {item.id == itemId && secondLoading ? <Spinner /> : <X />}
                                         </Button>
                                     </td>
                                 </tr>

@@ -1,4 +1,4 @@
-import { Mail, Home, Book, Circle } from "react-feather";
+import { Mail,Map, Home, Book, Circle } from "react-feather";
 
 export default [
   {
@@ -30,6 +30,20 @@ export default [
         title: "لیست دوره ها",
         icon: <Circle size={12} />,
         navLink: '/coursesList',
+      }
+    ]
+    ,
+  },
+  {
+    id: "blogPage",
+    title: "مدیریت بلاگ ها",
+    icon: <Map size={20} />,
+    children: [
+      {
+        id: "courseList",
+        title: "لیست بلاگ ها",
+        icon: <Circle size={12} />,
+        navLink: '/blogList',
       }
     ]
   }

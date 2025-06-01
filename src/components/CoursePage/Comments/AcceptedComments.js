@@ -8,13 +8,14 @@ import { useDispatch, useSelector } from 'react-redux'
 import { fetchCourseComments, setCourseId, updateComments } from '../../../redux/coursesSlice'
 import CommentDetail from './CommentDetail'
 import { deleteCourseReplyComment } from './../../../@core/services/courses';
+import { fetchBlogComments, setBlogId } from '../../../redux/blogSlice'
 
 
 
-const AcceptedComments = ({ courseId }) => {
+const AcceptedComments = ({ courseId, isBlogs }) => {
     const [detailModal, setDetailModal] = useState(false)
     const [commentId, setCommentId] = useState(null)
-    const { comments } = useSelector((state) => state.courses)
+    const comments = isBlogs ? useSelector((state) => state.blogs.comments) : useSelector((state) => state.courses.comments)
     const [buttonLoading, setButtonLoading] = useState(false)
     const [deleteModal, setDeleteModal] = useState(false)
     const dispatch = useDispatch()
@@ -22,8 +23,14 @@ const AcceptedComments = ({ courseId }) => {
         setCurrentPage(selected)
     }
     const handleComments = async () => {
-        dispatch(setCourseId(courseId))
-        dispatch(fetchCourseComments())
+        if (isBlogs) {
+            dispatch(setBlogId(courseId))
+            dispatch(fetchBlogComments())
+        }
+        else {
+            dispatch(setCourseId(courseId))
+            dispatch(fetchCourseComments())
+        }
     }
     const [currentPage, setCurrentPage] = useState(0)
     const itemsPerPage = 5
@@ -75,15 +82,14 @@ const AcceptedComments = ({ courseId }) => {
                                         {item.title?.length > 10 ? item.title.slice(0, 10) + '...' : item.title}
                                     </td>
                                     <td>
-                                        {item.author?.length > 10 ? item.author.slice(0, 10) + '...' : item.author}
+                                        {isBlogs ? (item.autor?.length > 10 ? item.autor.slice(0, 10) + '...' : item.autor ? item.autor :'بدون نام') : (item.author?.length > 10 ? item.author.slice(0, 10) + '...' : item.author ? item.author : 'بدون نام')}
                                     </td>
                                     <td>
-                                        {formatDate(item.insertDate)}
+                                        {isBlogs ? formatDate(item.inserDate):formatDate(item.insertDate)}
                                     </td>
                                     <td>
                                         <Eye className=' cursor-pointer' onClick={() => { setDetailModal(!detailModal); setCommentId(item.id) }} />
                                         <Trash className='cursor-pointer mx-1' onClick={() => { setDeleteModal(true); setCommentId(item.id) }} />
-
                                     </td>
                                 </tr>
                             ))
@@ -128,6 +134,7 @@ const AcceptedComments = ({ courseId }) => {
                 comments={comments}
                 commentId={commentId}
                 courseId={courseId}
+                isBlogs={isBlogs}
             />
 
 

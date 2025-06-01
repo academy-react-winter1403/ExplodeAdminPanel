@@ -15,11 +15,13 @@ import { selectThemeColors } from '@utils'
 import { Form, Label, Input, Row, Col, Button, FormFeedback, Spinner } from 'reactstrap'
 import { useSelector } from 'react-redux'
 import { addTechnologyForCourse } from '../../@core/services/courses'
+import { useNavigate } from 'react-router-dom'
 const AddTechnology = ({ resetForm, stepper }) => {
 
     const { courseTechnologies } = useSelector((state) => state.addCourse)
     const { courseId } = useSelector((state) => state.addCourse)
     const [loading, setLoading] = useState(false)
+    const navigate = useNavigate()
     const fieldsSchema = yup.object().shape({
         courseTechnology: yup
             .array()
@@ -52,9 +54,8 @@ const AddTechnology = ({ resetForm, stepper }) => {
         setLoading(true)
         await addTechnologyForCourse(courseId, techData)
         setLoading(false)
-        stepper.to(1)
+        navigate(`/coursedetail/${courseId}`)
 
-        console.log(techData)
     }
     return (
         <Fragment>

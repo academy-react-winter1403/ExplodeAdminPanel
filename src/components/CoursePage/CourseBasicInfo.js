@@ -29,10 +29,13 @@ import {
     setCourseTerm,
     setCourseType
 } from '../../redux/addCourseSlice'
+import { useLocation } from 'react-router-dom'
 
 const CourseBasicInfo = ({ stepper }) => {
     const [startPicker, setStartPicker] = useState(new Date())
     const [endPicker, setEndPicker] = useState(new Date())
+    const { pathname } = useLocation()
+    const isBlogs = pathname == '/blogList' ? true : false
     const dispatch = useDispatch()
     const {
         courseTypes,
@@ -122,7 +125,12 @@ const CourseBasicInfo = ({ stepper }) => {
     };
 
     useEffect(() => {
-        dispatch(fetchCourseInfo());
+        if (isBlogs) {
+
+        }
+        else {
+            dispatch(fetchCourseInfo());
+        }
     }, [dispatch]);
 
     return (

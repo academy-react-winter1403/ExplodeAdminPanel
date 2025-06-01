@@ -10,31 +10,50 @@ import StatsHorizontal from "@components/widgets/stats/StatsHorizontal";
 import CountUp from "react-countup";
 // ** Utils
 import { selectThemeColors } from '@utils'
-
 import { fetchAllCourses, setCurrentPage, setQuery, setRowsOfPage } from '../../redux/coursesSlice'
 import AddCourse from './AddCourse'
 import { Book, User } from 'react-feather'
+import { useLocation } from 'react-router-dom'
+import { fetchBlogs, setBlogQuery, setBlogsCurrentPage, setBlogStatus } from '../../redux/blogSlice'
 const Table = () => {
+    const { pathname } = useLocation()
+    const blogs = pathname == '/blogList' ? true : false
     const [activeTab, setActiveTab] = useState('1')
     const dispatch = useDispatch()
     const [contentLoading, setContentLoading] = useState(false)
     const [counter, setCounter] = useState(10)
+    const [blogs_Status, setBlogsStatus] = useState(true)
     const { rowsOfPage } = useSelector((state) => state.courses)
     const toggleTab = tab => {
         setActiveTab(tab)
     }
     const handlePagination = (page) => {
-        dispatch(setCurrentPage(page.selected + 1))
-        dispatch(fetchAllCourses())
+        if (blogs) {
+            dispatch(setBlogsCurrentPage(page.selected + 1))
+            dispatch(fetchBlogs())
+        }
+        else {
+            dispatch(setCurrentPage(page.selected + 1))
+            dispatch(fetchAllCourses())
+        }
         window.scrollTo(0, 0)
     }
-    const { totalCount, currentPage,activeCourses,notActiveCourses,allCoursesCount,deletedCourses } = useSelector((state) => state.courses)
+    const { totalCount, currentPage, activeCourses, notActiveCourses, allCoursesCount, deletedCourses } = useSelector((state) => state.courses)
+    const { activeTotalCount, currentPageBlog, blogRowsOfPage } = useSelector((state) => state.blogs)
 
     const handleSearch = async () => {
-        dispatch(setCurrentPage(1))
         setContentLoading(true)
-        dispatch(setRowsOfPage(counter))
-        await dispatch(fetchAllCourses())
+        if (blogs) {
+            dispatch(setBlogsCurrentPage(1))
+            dispatch(setBlogStatus(blogs_Status))
+            await dispatch(fetchBlogs())
+        }
+
+        else {
+            dispatch(setCurrentPage(1))
+            dispatch(setRowsOfPage(counter))
+            await dispatch(fetchAllCourses())
+        }
         setContentLoading(false)
     }
 
@@ -43,107 +62,114 @@ const Table = () => {
         { value: 10, label: '10' },
         { value: 15, label: '15' },
     ]
+
+    const blogsStatus = [
+        { value: true, label: 'فعال' },
+        { value: false, label: 'غیر فعال' },
+    ]
     return (
         <Row>
-
-            <Col lg="3" sm="3">
-                <StatsHorizontal
-                    color="primary"
-                    statTitle="کل دوره ها"
-                    icon={<Book size={20} />}
-                    renderStats={
-                        <h3 className="fw-bolder mb-75">
-                            {" "}
-                            <CountUp
-                                start={0}
-                                end={allCoursesCount}
-                                duration={3}
-                                separator=","
-                                style={{ fontSize: "2rem", fontWeight: "bold" }}
+            {
+                blogs ? '' :
+                    <>
+                        <Col lg="3" sm="3">
+                            <StatsHorizontal
+                                color="primary"
+                                statTitle="کل دوره ها"
+                                icon={<Book size={20} />}
+                                renderStats={
+                                    <h3 className="fw-bolder mb-75">
+                                        {" "}
+                                        <CountUp
+                                            start={0}
+                                            end={allCoursesCount}
+                                            duration={3}
+                                            separator=","
+                                            style={{ fontSize: "2rem", fontWeight: "bold" }}
+                                        />
+                                    </h3>
+                                }
                             />
-                        </h3>
-                    }
-                />
-            </Col>
-            <Col lg="3" sm="3">
-                <StatsHorizontal
-                    color="success"
-                    statTitle="دوره های فعال "
-                    icon={<Book size={20} />}
-                    renderStats={
-                        <h3 className="fw-bolder mb-75">
-                            {" "}
-                            <CountUp
-                                start={0}
-                                end={activeCourses}
-                                duration={3}
-                                separator=","
-                                style={{ fontSize: "2rem", fontWeight: "bold" }}
+                        </Col>
+                        <Col lg="3" sm="3">
+                            <StatsHorizontal
+                                color="success"
+                                statTitle="دوره های فعال "
+                                icon={<Book size={20} />}
+                                renderStats={
+                                    <h3 className="fw-bolder mb-75">
+                                        {" "}
+                                        <CountUp
+                                            start={0}
+                                            end={activeCourses}
+                                            duration={3}
+                                            separator=","
+                                            style={{ fontSize: "2rem", fontWeight: "bold" }}
+                                        />
+                                    </h3>
+                                }
                             />
-                        </h3>
-                    }
-                />
-            </Col>
-            <Col lg="3" sm="3">
-                <StatsHorizontal
-                    color="warning"
-                    statTitle="دوره های غیر فعال "
-                    icon={<Book size={20} />}
-                    renderStats={
-                        <h3 className="fw-bolder mb-75">
-                            {" "}
-                            <CountUp
-                                start={0}
-                                end={notActiveCourses}
-                                duration={3}
-                                separator=","
-                                style={{ fontSize: "2rem", fontWeight: "bold" }}
+                        </Col>
+                        <Col lg="3" sm="3">
+                            <StatsHorizontal
+                                color="warning"
+                                statTitle="دوره های غیر فعال "
+                                icon={<Book size={20} />}
+                                renderStats={
+                                    <h3 className="fw-bolder mb-75">
+                                        {" "}
+                                        <CountUp
+                                            start={0}
+                                            end={notActiveCourses}
+                                            duration={3}
+                                            separator=","
+                                            style={{ fontSize: "2rem", fontWeight: "bold" }}
+                                        />
+                                    </h3>
+                                }
                             />
-                        </h3>
-                    }
-                />
-            </Col>
-            <Col lg="3" sm="3">
-                <StatsHorizontal
-                    color="danger"
-                    statTitle="دوره های حذف شده "
-                    icon={<Book size={20} />}
-                    renderStats={
-                        <h3 className="fw-bolder mb-75">
-                            {" "}
-                            <CountUp
-                                start={0}
-                                end={deletedCourses}
-                                duration={3}
-                                separator=","
-                                style={{ fontSize: "2rem", fontWeight: "bold" }}
+                        </Col>
+                        <Col lg="3" sm="3">
+                            <StatsHorizontal
+                                color="danger"
+                                statTitle="دوره های حذف شده "
+                                icon={<Book size={20} />}
+                                renderStats={
+                                    <h3 className="fw-bolder mb-75">
+                                        {" "}
+                                        <CountUp
+                                            start={0}
+                                            end={deletedCourses}
+                                            duration={3}
+                                            separator=","
+                                            style={{ fontSize: "2rem", fontWeight: "bold" }}
+                                        />
+                                    </h3>
+                                }
                             />
-                        </h3>
-                    }
-                />
-            </Col>
-
-
+                        </Col>
+                    </>
+            }
 
             <Col sm='12'>
                 <Card className='p-1'>
-                    <CardTitle>فیلتر دوره</CardTitle>
+                    <CardTitle>{blogs ? 'فیلتر بلاگ ' : 'فیلتر دوره '}</CardTitle>
                     <CardBody >
                         <Row>
                             <Col sm='6'>
-                                <Label>جستجو در نام دوره</Label>
-                                <Input type='text' id='basicinput' placeholder='دوره مورد نظر را جستجو کنید' onChange={(event) => dispatch(setQuery(event.target.value))} />
+                                <Label>{blogs ? 'جستجو در نام بلاگ' : 'جستجو در نام دوره'}</Label>
+                                <Input type='text' id='basicinput' placeholder={blogs ? 'نام بلاگ را وارد کنید' : 'نام دوره را وارد کنید'} onChange={blogs ? (event) => dispatch(setBlogQuery(event.target.value)) : (event) => dispatch(setQuery(event.target.value))} />
                             </Col>
                             <Col sm='6'>
-                                <Label>تعداد در صفحه</Label>
+                                <Label>{blogs ? 'وضعیت' : 'تعداد در صفحه'}</Label>
                                 <Select
                                     theme={selectThemeColors}
                                     className='react-select'
                                     classNamePrefix='select'
-                                    defaultValue={Rows_Of_Page[1]}
-                                    options={Rows_Of_Page}
+                                    defaultValue={blogs ? blogsStatus[0] : Rows_Of_Page[1]}
+                                    options={blogs ? blogsStatus : Rows_Of_Page}
                                     isClearable={false}
-                                    onChange={(option) => setCounter(option.value)}
+                                    onChange={blogs ? (option) => setBlogsStatus(option.value) : (option) => setCounter(option)}
                                 />
                             </Col>
                         </Row>
@@ -153,7 +179,7 @@ const Table = () => {
             </Col>
 
             <Col sm='12'>
-                <Card>
+                <Card className='p-1'>
                     <Tabs className='mb-2' activeTab={activeTab} toggleTab={toggleTab} />
                     <TabContent activeTab={activeTab}>
                         <TabPane tabId='1'>
@@ -163,9 +189,9 @@ const Table = () => {
                                     <ReactPaginate
                                         previousLabel={''}
                                         nextLabel={''}
-                                        pageCount={Math.ceil(totalCount / rowsOfPage)}
+                                        pageCount={blogs ? Math.ceil(activeTotalCount / blogRowsOfPage) : Math.ceil(totalCount / rowsOfPage)}
                                         activeClassName='active'
-                                        forcePage={currentPage !== 0 ? currentPage - 1 : 0}
+                                        forcePage={blogs ? (currentPageBlog !== 0 ? currentPageBlog - 1 : 0) : (currentPage !== 0 ? currentPage - 1 : 0)}
                                         onPageChange={page => handlePagination(page)}
                                         pageClassName={'page-item'}
                                         nextLinkClassName={'page-link'}

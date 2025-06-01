@@ -7,6 +7,7 @@ import courses from "./coursesSlice"
 import addCourse from "./addCourseSlice"
 import courseDetails from "./courseDetailSlice"
 import editCourse from "./editCourse"
-const rootReducer = { navbar, layout, auth, appUsers, courses, addCourse, courseDetails, editCourse };
+import blogs from "./blogSlice"
+const rootReducer = { navbar, layout, auth, appUsers, courses, addCourse, courseDetails, editCourse,blogs };
 
 export default rootReducer;

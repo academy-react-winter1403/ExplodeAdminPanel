@@ -2,40 +2,42 @@ import { Card, CardBody, CardHeader, CardTitle, Col, Modal, ModalBody, ModalHead
 import AcceptedComments from './AcceptedComments'
 import { MessageCircle } from 'react-feather'
 import NotAcceptedComments from './NotAcceptedComments'
-import { useSelector } from 'react-redux'
 
 
 
 
-const Comment = ({ setCommentModal, commentModal, courseId }) => {
+const Comment = ({ setCommentModal, commentModal, courseId, isBlogs }) => {
 
-  
+
   return (
     <Modal isOpen={commentModal} toggle={() => setCommentModal(!commentModal)} className='modal-dialog-centered modal-xl'>
-      <ModalHeader toggle={() => setCommentModal(!commentModal)}><MessageCircle /> لیست نظرات دوره</ModalHeader>
+      <ModalHeader toggle={() => setCommentModal(!commentModal)}><MessageCircle /> {isBlogs ? 'لیست نظرات بلاگ' : 'لیست نظرات دوره'}</ModalHeader>
       <ModalBody>
         <Row>
-          <Col sm='12' xl='6'>
+          <Col sm='12' xl={isBlogs ? '12' : '6'}>
             <Card>
               <CardHeader>
                 <CardTitle tag="h2"><MessageCircle /> نظرات </CardTitle>
               </CardHeader>
               <CardBody>
-                <AcceptedComments courseId={courseId} />
+                <AcceptedComments courseId={courseId} isBlogs={isBlogs} />
               </CardBody>
             </Card>
           </Col>
 
-          <Col sm='12' xl='6'>
-            <Card>
-              <CardHeader>
-                <CardTitle tag="h2"><MessageCircle /> نظرات تایید نشده</CardTitle>
-              </CardHeader>
-              <CardBody>
-                <NotAcceptedComments courseId={courseId} />
-              </CardBody>
-            </Card>
-          </Col>
+          {
+            !isBlogs &&
+            <Col sm='12' xl='6'>
+              <Card>
+                <CardHeader>
+                  <CardTitle tag="h2"><MessageCircle /> نظرات تایید نشده</CardTitle>
+                </CardHeader>
+                <CardBody>
+                  <NotAcceptedComments courseId={courseId} />
+                </CardBody>
+              </Card>
+            </Col>
+          }
         </Row>
       </ModalBody>
     </Modal>
