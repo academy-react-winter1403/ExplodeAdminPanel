@@ -8,6 +8,7 @@ import { setCommentId, setDeleteCommentReply } from '../../../redux/coursesSlice
 import { setCourseId } from '../../../redux/addCourseSlice'
 import { deleteCourseReplyComment } from '../../../@core/services/courses'
 import ReplyComment from './ReplyComment'
+import { setBlogCommentId, setBlogId } from '../../../redux/blogSlice'
 
 const Comment = ({ comment, onLoadReplies, isBlogs }) => {
     const dispatch = useDispatch()
@@ -18,6 +19,8 @@ const Comment = ({ comment, onLoadReplies, isBlogs }) => {
     const [commentTitle, setCommentTitle] = useState(null)
     const notChildren = "00000000-0000-0000-0000-000000000000"
     const { courseId } = useSelector((state) => state.courses)
+    const { blogId } = useSelector((state) => state.blogs)
+
     const handleDelete = async () => {
         setButtonLoading(true)
         await deleteCourseReplyComment(replyCommentId, setButtonLoading, setDeleteModal)
@@ -25,6 +28,7 @@ const Comment = ({ comment, onLoadReplies, isBlogs }) => {
         setButtonLoading(false)
         setDeleteModal(false)
     }
+
     return (
         <>
             <Col sm='12' style={{ boxShadow: '0px 0px 10px #e2e2e2' }}>
@@ -42,10 +46,10 @@ const Comment = ({ comment, onLoadReplies, isBlogs }) => {
 
                             <span className='mx-1'>{isBlogs ? formatDate(comment?.inserDate) : formatDate(comment?.insertDate)}</span>
                             {
-                                comment?.parentId !== notChildren && <Trash className='cursor-pointer me-1' onClick={() => { setReplyCommentId(comment?.id), setDeleteModal(true) }} />
+                                !isBlogs && comment?.parentId !== notChildren && <Trash className='cursor-pointer me-1' onClick={() => { setReplyCommentId(comment?.id), setDeleteModal(true) }} />
                             }
                             {
-                                (isBlogs ? comment?.replyCount : comment?.acceptReplysCount > 0) && comment.parentId !== notChildren && <ArrowDownCircle className='cursor-pointer' onClick={async () => { dispatch(setCommentId(comment?.id)); dispatch(setCourseId(courseId)); onLoadReplies(comment.id) }} />
+                                (isBlogs ? comment?.replyCount : comment?.acceptReplysCount > 0) && comment.parentId !== notChildren && <ArrowDownCircle className='cursor-pointer' onClick={async () => { dispatch(isBlogs ? setBlogCommentId(comment.id) : setCommentId(comment?.id)); dispatch(isBlogs ? setBlogId(comment.newsId) : setCourseId(comment.courseId)); onLoadReplies(comment.id) }} />
                             }
                             <span style={{ marginLeft: '10px', marginRight: '10px' }}>تعداد لایک  {comment?.likeCount}</span>
 
@@ -63,9 +67,9 @@ const Comment = ({ comment, onLoadReplies, isBlogs }) => {
                         {comment?.replies?.length > 0 && (
                             comment?.replies.map((reply) => (
                                 < Comment
-                                    key = { reply.id }
-                                    comment = { reply }
-                                    onLoadReplies = { onLoadReplies }
+                                    key={reply.id}
+                                    comment={reply}
+                                    onLoadReplies={onLoadReplies}
                                     isBlogs={isBlogs}
                                 />
                             ))
@@ -98,9 +102,10 @@ const Comment = ({ comment, onLoadReplies, isBlogs }) => {
             <ReplyComment
                 setReplyModal={setReplyModal}
                 replyModal={replyModal}
-                courseId={courseId}
+                courseId={isBlogs ? blogId : courseId}
                 commentId={replyCommentId}
                 commentTitle={commentTitle}
+                isBlogs={isBlogs}
             />
         </>
 

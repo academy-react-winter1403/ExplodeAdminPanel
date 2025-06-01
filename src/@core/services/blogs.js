@@ -44,6 +44,21 @@ export const getBlogsComments = async (id) => {
     }
 };
 
+export const addBlogReplyComment = async (loading, obj) => {
+    try {
+        loading(true);
+        const response = await instance.post(`/News/CreateNewsReplyComment`, obj);
+        loading(false);
+        toast.success('نظر شما با موفقیت ثبت شد');
+        console.log(response);
+        return response;
+    } catch (error) {
+        loading(false);
+        console.error('Error:', error);
+        throw error;
+    }
+};
+
 // export const getMyFavoriteBlogs = async (urlParams) => {
 //   try {
 //     const response = await instance.get('/SharePanel/GetMyFavoriteNews', {

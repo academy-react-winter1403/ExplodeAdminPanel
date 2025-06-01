@@ -89,7 +89,7 @@ const AcceptedComments = ({ courseId, isBlogs }) => {
                                     </td>
                                     <td>
                                         <Eye className=' cursor-pointer' onClick={() => { setDetailModal(!detailModal); setCommentId(item.id) }} />
-                                        <Trash className='cursor-pointer mx-1' onClick={() => { setDeleteModal(true); setCommentId(item.id) }} />
+                                        {!isBlogs && <Trash className='cursor-pointer mx-1' onClick={() => { setDeleteModal(true); setCommentId(item.id) }} />}
                                     </td>
                                 </tr>
                             ))

@@ -3,10 +3,12 @@ import { MessageCircle } from 'react-feather'
 import { Controller, useForm } from 'react-hook-form'
 import { Button, Form, Input, Label, Modal, ModalBody, ModalHeader, Spinner } from 'reactstrap'
 import { addCommentReplyCourse } from '../../../@core/services/courses'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { fetchCourseCommentReplies } from '../../../redux/coursesSlice'
+import { fetchBlogCommentReplies } from '../../../redux/blogSlice'
+import { addBlogReplyComment } from '../../../@core/services/blogs'
 
-const ReplyComment = ({ replyModal, setReplyModal, commentTitle, commentId, courseId }) => {
+const ReplyComment = ({ replyModal, setReplyModal, commentTitle, commentId, courseId, isBlogs }) => {
     const [loading, setLoading] = useState(false)
     const dispatch = useDispatch()
     const {
@@ -23,13 +25,18 @@ const ReplyComment = ({ replyModal, setReplyModal, commentTitle, commentId, cour
             Describe: ''
         })
     }
-
     const onSubmit = async data => {
         if (Object.values(data).every(field => field.length > 0)) {
-            const commentData = { CommentId: commentId, CourseId: courseId, Title: data.Title, Describe: data.Describe }
-            console.log(commentId)
-            await addCommentReplyCourse(setLoading, setReplyModal, commentData)
-            dispatch(fetchCourseCommentReplies())
+            if (isBlogs) {
+                const commentData = { parentId: commentId, newsId: courseId, title: data.Title, describe: data.Describe }
+                await addBlogReplyComment(setLoading, commentData)
+                dispatch(fetchBlogCommentReplies())
+            }
+            else {
+                const commentData = { CommentId: commentId, CourseId: courseId, Title: data.Title, Describe: data.Describe }
+                await addCommentReplyCourse(setLoading, setReplyModal, commentData)
+                dispatch(fetchCourseCommentReplies())
+            }
         } else {
             for (const key in data) {
                 if (data[key].length === 0) {

@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchCourseCommentReplies, setCommentId, setCourseId } from '../../../redux/coursesSlice';
 import Comment from './Comment';
-import { fetchBlogCommentReplies, fetchBlogComments, setBlogCommentId } from '../../../redux/blogSlice';
+import { fetchBlogCommentReplies, setBlogCommentId, setBlogId } from '../../../redux/blogSlice';
 
 const CommentDetail = ({ detailModal, setDetailModal, commentId, courseId, comments, isBlogs }) => {
     const comment = comments.find((c) => c.id == commentId)
@@ -15,19 +15,19 @@ const CommentDetail = ({ detailModal, setDetailModal, commentId, courseId, comme
 
     const handleLoadReplies = () => {
         if (isBlogs) {
-            dispatch(fetchBlogComments())
             dispatch(fetchBlogCommentReplies())
         }
         else {
-            dispatch(fetchCourseCommentReplies())
             dispatch(fetchCourseCommentReplies())
         }
     };
     useEffect(() => {
         if (isBlogs) {
-            if (detailModal && commentId) {
+            if (detailModal && commentId && courseId) {
+                dispatch(setBlogId(courseId))
                 dispatch(setBlogCommentId(commentId))
                 dispatch(fetchBlogCommentReplies())
+                dispatch(setBlogId(courseId))
             }
         }
         else {
