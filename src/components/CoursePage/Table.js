@@ -169,7 +169,7 @@ const Table = () => {
                                     defaultValue={blogs ? blogsStatus[0] : Rows_Of_Page[1]}
                                     options={blogs ? blogsStatus : Rows_Of_Page}
                                     isClearable={false}
-                                    onChange={blogs ? (option) => setBlogsStatus(option.value) : (option) => setCounter(option)}
+                                    onChange={blogs ? (option) => setBlogsStatus(option.value) : (option) => setCounter(option.value)}
                                 />
                             </Col>
                         </Row>

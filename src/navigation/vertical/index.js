@@ -1,4 +1,4 @@
-import { Mail,Map, Home, Book, Circle } from "react-feather";
+import { Mail, Map, Home, Book, Circle, FolderPlus } from "react-feather";
 
 export default [
   {
@@ -44,7 +44,13 @@ export default [
         title: "لیست بلاگ ها",
         icon: <Circle size={12} />,
         navLink: '/blogList',
-      }
+      },
+      {
+        id: "newCategory",
+        title: "دسته بندی",
+        icon: <Circle size={12} />,
+        navLink: '/addNewCatgeory',
+      },
     ]
   }
 ];

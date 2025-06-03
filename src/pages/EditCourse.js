@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { useLocation, useParams } from 'react-router-dom'
 import { getCourseById, getCourseInfoForCreate } from '../@core/services/courses'
 import { useDispatch } from 'react-redux'
 import { setBasicInfo } from '../redux/editCourse'
@@ -9,7 +9,10 @@ import BasicInfo from '../components/CoursePage/EditCourse/BasicInfo'
 import '@styles/react/libs/flatpickr/flatpickr.scss'
 import Description from '../components/CoursePage/EditCourse/Description'
 import ImageUploader from '../components/CoursePage/EditCourse/ImageUploader'
+import { fetchBlogData, fetchCategories, setBlogId } from '../redux/blogCategoriesSlice'
 const EditCourse = () => {
+    const { pathname } = useLocation()
+    const isBlogs = pathname.includes('/editblog') ? true : false
     // ** Ref
     const ref = useRef(null)
     // ** State
@@ -21,10 +24,17 @@ const EditCourse = () => {
     const fetchData = async () => {
         try {
             setLoading(true)
-            const basicInfo = await getCourseInfoForCreate()
-            const result = await getCourseById(courseId)
-            setCourseData(result)
-            dispatch(setBasicInfo(basicInfo))
+            if (isBlogs) {
+                dispatch(setBlogId(courseId))
+                await dispatch(fetchCategories())
+                await dispatch(fetchBlogData())
+            }
+            else {
+                const basicInfo = await getCourseInfoForCreate()
+                const result = await getCourseById(courseId)
+                setCourseData(result)
+                dispatch(setBasicInfo(basicInfo))
+            }
             setLoading(false)
         }
         catch {
@@ -42,7 +52,9 @@ const EditCourse = () => {
         return (
             <div className="text-center my-5">
                 <Spinner color="primary" />
-                <p className="mt-1">در حال دریافت اطلاعات دوره...</p>
+                {
+                    isBlogs ? <p className="mt-1">در حال دریافت اطلاعات بلاگ...</p> : <p className="mt-1">در حال دریافت اطلاعات دوره...</p>
+                }
             </div>
         );
     }
@@ -65,12 +77,27 @@ const EditCourse = () => {
             id: 'course-img',
             title: 'عکس',
             subtitle: 'عکس اصلی دوره',
-            content: <ImageUploader stepper={stepper} courseData={courseData}/>
+            content: <ImageUploader stepper={stepper} courseData={courseData} />
+        }
+    ]
+
+    const blogSteps = [
+        {
+            id: 'basic-info',
+            title: 'اطلاعات اولیه',
+            subtitle: 'اطلاعات اولیه (اجباری) ',
+            content: <BasicInfo stepper={stepper} courseData={courseData} isBlogs={isBlogs} />
+        },
+        {
+            id: 'course-img',
+            title: 'عکس',
+            subtitle: 'عکس اصلی دوره',
+            content: <ImageUploader stepper={stepper} courseData={courseData} isBlogs={isBlogs} />
         }
     ]
     return (
         <div className='horizontal-wizard'>
-            <Wizard instance={el => setStepper(el)} ref={ref} steps={steps} />
+            <Wizard instance={el => setStepper(el)} ref={ref} steps={isBlogs ? blogSteps : steps} />
         </div>
     )
 }

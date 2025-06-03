@@ -18,6 +18,7 @@ const AcceptedComments = ({ courseId, isBlogs }) => {
     const comments = isBlogs ? useSelector((state) => state.blogs.comments) : useSelector((state) => state.courses.comments)
     const [buttonLoading, setButtonLoading] = useState(false)
     const [deleteModal, setDeleteModal] = useState(false)
+    
     const dispatch = useDispatch()
     const handlePagination = ({ selected }) => {
         setCurrentPage(selected)
@@ -48,6 +49,7 @@ const AcceptedComments = ({ courseId, isBlogs }) => {
     }
     useEffect(() => {
         handleComments()
+
     }, [])
 
     useEffect(() => {
@@ -82,10 +84,10 @@ const AcceptedComments = ({ courseId, isBlogs }) => {
                                         {item.title?.length > 10 ? item.title.slice(0, 10) + '...' : item.title}
                                     </td>
                                     <td>
-                                        {isBlogs ? (item.autor?.length > 10 ? item.autor.slice(0, 10) + '...' : item.autor ? item.autor :'بدون نام') : (item.author?.length > 10 ? item.author.slice(0, 10) + '...' : item.author ? item.author : 'بدون نام')}
+                                        {isBlogs ? (item.autor?.length > 10 ? item.autor.slice(0, 10) + '...' : item.autor ? item.autor : 'بدون نام') : (item.author?.length > 10 ? item.author.slice(0, 10) + '...' : item.author ? item.author : 'بدون نام')}
                                     </td>
                                     <td>
-                                        {isBlogs ? formatDate(item.inserDate):formatDate(item.insertDate)}
+                                        {isBlogs ? formatDate(item.inserDate) : formatDate(item.insertDate)}
                                     </td>
                                     <td>
                                         <Eye className=' cursor-pointer' onClick={() => { setDetailModal(!detailModal); setCommentId(item.id) }} />

@@ -6,11 +6,15 @@ import { ArrowLeft, ArrowRight } from 'react-feather'
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchAddCourse, setCourseImage, setCourseUUID } from '../../redux/addCourseSlice';
 import { nanoid } from '@reduxjs/toolkit'
+import { useForm } from 'react-hook-form';
+import { createNewBlog } from '../../@core/services/blogs';
+import toast from 'react-hot-toast';
 
-const CourseImage = ({ stepper }) => {
+const CourseImage = ({ stepper, isBlogs }) => {
     const dispatch = useDispatch()
     const [loading, setLoading] = useState(false)
     const { courseTitle } = useSelector((state) => state.addCourse)
+    const { newBlogData, blogImage } = useSelector((state) => state.blogCategories)
     const [files, setFiles] = useState([])
     const generateUniqueUrlString = (title) => {
         const slug = title
@@ -25,22 +29,46 @@ const CourseImage = ({ stepper }) => {
         return `${slug}-${uniqueId}`; // خروجی نهایی
     };
 
-    const handleOnClick = async () => {
-        dispatch(setCourseUUID(generateUniqueUrlString(courseTitle)))
-        setLoading(true)
-        const result = await dispatch(fetchAddCourse(setLoading))
-        dispatch(setCourseImage(false))
-        setLoading(false)
-        if (result.payload.id) {
+    const {
+    } = useForm()
 
-            setFiles([])
+    const handleOnClick = async () => {
+        if (isBlogs) {
+            try {
+                setLoading(true)
+                const { message } = await createNewBlog(newBlogData,blogImage)
+                setLoading(false)
+                if (message == "عملیات با موفقیت انجام شد.") {
+                    toast.success('بلاگ مورد نظر اضاف شد و پس از فعال کردن در لیست بلاگ ها نمایش داده میشود')
+                    setFiles([])
+                    stepper.to(1)
+                }
+            }
+            catch {
+                setLoading(false)
+            }
         }
-        stepper.next()
+        else {
+            try {
+                dispatch(setCourseUUID(generateUniqueUrlString(courseTitle)))
+                setLoading(true)
+                const result = await dispatch(fetchAddCourse(setLoading))
+                dispatch(setCourseImage(false))
+                setLoading(false)
+                if (result.payload.id) {
+                    setFiles([])
+                }
+                stepper.next()
+            }
+            catch {
+                setLoading(false)
+            }
+        }
     }
     return (
         <Fragment>
             <Row>
-                <MainImage files={files} setFiles={setFiles} />
+                <MainImage files={files} setFiles={setFiles} isBlogs={isBlogs} />
             </Row>
             <div className='d-flex justify-content-between'>
                 <Button type='button' color='primary' className='btn-prev' onClick={() => stepper.previous()}>

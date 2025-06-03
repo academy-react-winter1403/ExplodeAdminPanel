@@ -10,7 +10,7 @@ const CoursesList = () => {
   const dispatch = useDispatch()
   const [loading, setLoading] = useState(false)
   const { pathname } = useLocation()
-  const blogs = pathname == '/blogList' ? true : false
+  const blogs = pathname.includes('/blogList') ? true : false
   const fetchData = async () => {
     try {
       setLoading(true)

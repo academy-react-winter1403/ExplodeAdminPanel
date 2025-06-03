@@ -59,155 +59,95 @@ export const addBlogReplyComment = async (loading, obj) => {
     }
 };
 
-// export const getMyFavoriteBlogs = async (urlParams) => {
-//   try {
-//     const response = await instance.get('/SharePanel/GetMyFavoriteNews', {
-//       params: urlParams,
-//     });
-//     console.log('response', response);
-//   } catch (error) {
-//     console.error('Error:', error);
-//     throw error;
-//   }
-// };
 
-// export const getBlogsCategories = async () => {
-//   try {
-//     const response = await instance.get('/News/GetListNewsCategory');
-//     return response;
-//   } catch (error) {
-//     console.error('Error:', error);
-//     throw error;
-//   }
-// };
+export const getCategories = async () => {
+    try {
+        const response = await instance.get('/News/GetListNewsCategory');
+        return response;
+    } catch (error) {
+        console.error('Error:', error);
+        throw error;
+    }
+};
 
-// export const getBlogById = async (blogId) => {
-//   try {
-//     const response = await instance.get(`/News/${blogId}`);
-//     return response;
-//   } catch (error) {
-//     console.error('Error:', error);
-//     throw error;
-//   }
-// };
 
-// export const getBlogComments = async (params) => {
-//   try {
-//     const response = await instance.get(`/News/GetNewsComments`, {
-//       params: params,
-//     });
-//     return response;
-//   } catch (error) {
-//     console.error('Error:', error);
-//     throw error;
-//   }
-// };
+export const getNewsById = async (id) => {
+    try {
+        const response = await instance.get(`/News/${id}`);
+        return response;
+    } catch (error) {
+        console.error('Error:', error);
+        throw error;
+    }
+};
 
-// export const AddCommentBlog = async (loading, obj) => {
-//   try {
-//     loading(true);
-//     const response = await instance.post(`/News/CreateNewsComment`, obj);
-//     loading(false);
-//     toast.success('نظر شما با موفقیت ثبت شد');
-//     console.log(response);
-//     return response;
-//   } catch (error) {
-//     loading(false);
-//     console.error('Error:', error);
-//     throw error;
-//   }
-// };
+export const updateCategories = async (obj) => {
+    const formData = new FormData()
+    formData.append('Id', obj.Id)
+    formData.append('CategoryName', obj.CategoryName)
+    formData.append('GoogleTitle', obj.GoogleTitle)
+    formData.append('GoogleDescribe', obj.GoogleDescribe)
+    try {
+        const response = await instance.put('/News/UpdateNewsCategory', formData);
+        return response;
+    } catch (error) {
+        console.error('Error:', error);
+        throw error;
+    }
+};
 
-// export const addBlogReplyComment = async (loading, obj) => {
-//   try {
-//     loading(true);
-//     const response = await instance.post(`/News/CreateNewsReplyComment`, obj);
-//     loading(false);
-//     toast.success('نظر شما با موفقیت ثبت شد');
-//     console.log(response);
-//     return response;
-//   } catch (error) {
-//     loading(false);
-//     console.error('Error:', error);
-//     throw error;
-//   }
-// };
+export const createCategories = async (obj) => {
+    const formData = new FormData()
+    formData.append('CategoryName', obj.addCategoryName)
+    formData.append('GoogleTitle', obj.addGoogleTitle)
+    formData.append('GoogleDescribe', obj.addGoogleDescribe)
+    try {
+        const response = await instance.post('/News/CreateNewsCategory', formData);
+        return response;
+    } catch (error) {
+        console.error('Error:', error);
+        throw error;
+    }
+};
 
-// export const addDissLikeForBlogComment = async (
-//   commentId,
-//   likeType,
-//   setLoading,
-// ) => {
-//   try {
-//     setLoading(true);
-//     const response = await instance.post(
-//       `/News/CommentLike/${commentId}`,
-//       null,
-//       {
-//         params: { LikeType: likeType },
-//       },
-//     );
-//     toast.success(response.success);
-//     setLoading(false);
-//     return response;
-//   } catch (error) {
-//     setLoading(false);
-//     throw error;
-//   }
-// };
+export const createNewBlog = async (obj, blogImage) => {
+    const formData = new FormData()
+    formData.append('Title', obj.blogTitle)
+    formData.append('GoogleTitle', obj.googleTitle)
+    formData.append('GoogleDescribe', obj.googleDescribe)
+    formData.append('MiniDescribe', obj.miniDescribe)
+    formData.append('Describe', obj.editorContent)
+    formData.append('Keyword', obj.keyWords)
+    formData.append('NewsCatregoryId', obj.blogCategory.value)
+    formData.append('Image', blogImage)
+    try {
+        const response = await instance.post('/News/CreateNews', formData);
+        return response;
+    } catch (error) {
+        console.error('Error:', error);
+        throw error;
+    }
+};
 
-// export const addBlogRate = async (newsId, blogRate, setLoading) => {
-//   try {
-//     setLoading(true);
-//     const response = await instance.post(`/News/NewsRate`, null, {
-//       params: { NewsId: newsId, RateNumber: blogRate },
-//     });
-//     toast.success(response.message);
-//     setLoading(false);
-//     return response;
-//   } catch (error) {
-//     setLoading(false);
-//     throw error;
-//   }
-// };
-
-// export const addBlogToFavoriteList = async (id, setLoading) => {
-//   try {
-//     setLoading(true);
-//     const response = await instance.post(`/News/AddFavoriteNews`, null, {
-//       params: { NewsId: id },
-//     });
-//     toast.success(response.message);
-//     setLoading(false);
-//     return response;
-//   } catch (error) {
-//     setLoading(false);
-//     throw error;
-//   }
-// };
-
-// export const addLikeForBlog = async (id, setLoading) => {
-//   try {
-//     setLoading(true);
-//     const response = await instance.post(`/News/NewsLike/${id}`);
-//     toast.success(response.message);
-//     setLoading(false);
-//     return response;
-//   } catch (error) {
-//     setLoading(false);
-//     throw error;
-//   }
-// };
-
-// export const addDisLikeForBlog = async (id, setLoading) => {
-//   try {
-//     setLoading(true);
-//     const response = await instance.post(`/News/NewsDissLike/${id}`);
-//     toast.success(response.message);
-//     setLoading(false);
-//     return response;
-//   } catch (error) {
-//     setLoading(false);
-//     throw error;
-//   }
-// };
+export const updateBlogInfo = async (obj, blogId, blogImage) => {
+    const formData = new FormData()
+    formData.append('Id', blogId)
+    formData.append('Title', obj.blogTitle)
+    formData.append('GoogleTitle', obj.googleTitle)
+    formData.append('GoogleDescribe', obj.googleDescribe)
+    formData.append('MiniDescribe', obj.miniDescribe)
+    formData.append('Describe', obj.editorContent)
+    formData.append('Keyword', obj.keyWords)
+    formData.append('NewsCatregoryId', obj.blogCategory.value)
+    formData.append('CurrentImageAddress', blogImage)
+    formData.append('CurrentImageAddressTumb', blogImage)
+    formData.append('Image', blogImage)
+    formData.append('Active', true)
+    try {
+        const response = await instance.put('/News/UpdateNews', formData);
+        return response;
+    } catch (error) {
+        console.error('Error:', error);
+        throw error;
+    }
+};

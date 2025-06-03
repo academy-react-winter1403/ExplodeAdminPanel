@@ -5,7 +5,10 @@ import '@styles/react/libs/flatpickr/flatpickr.scss'
 import CourseDescription from './CourseDescription'
 import CourseImage from './CourseImage'
 import AddTechnology from './AddTechnology'
+import { useLocation } from 'react-router-dom'
 const AddCourse = () => {
+    const { pathname } = useLocation()
+    const isBlogs = pathname.includes('/blogList') ? true : false
     // ** Ref
     const ref = useRef(null)
     // ** State
@@ -38,9 +41,24 @@ const AddCourse = () => {
         }
 
     ]
+
+    const blogSteps = [
+        {
+            id: 'basic-information',
+            title: 'اطلاعات اولیه',
+            subtitle: 'اطلاعات اولیه و اجباری ',
+            content: <CourseBasicInfo stepper={stepper} isBlogs={isBlogs} />
+        },
+        {
+            id: 'course-image',
+            title: 'عکس',
+            subtitle: ' عکس اصلی بلاگ',
+            content: <CourseImage stepper={stepper} isBlogs={isBlogs} />
+        }
+    ]
     return (
         <div className='horizontal-wizard'>
-            <Wizard instance={el => setStepper(el)} ref={ref} steps={steps} />
+            <Wizard instance={el => setStepper(el)} ref={ref} steps={isBlogs ? blogSteps : steps} />
         </div>
     )
 }

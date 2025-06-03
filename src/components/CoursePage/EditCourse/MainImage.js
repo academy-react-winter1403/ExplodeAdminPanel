@@ -9,8 +9,9 @@ import { useDropzone } from 'react-dropzone'
 import { FileText, X, DownloadCloud } from 'react-feather'
 import { useDispatch, useSelector } from 'react-redux'
 import { setCourseImage } from '../../../redux/editCourse'
+import { setBlogImage } from '../../../redux/blogCategoriesSlice'
 
-const MainImage = ({files,setFiles}) => {
+const MainImage = ({ files, setFiles, isBlogs }) => {
     // ** State
     console.log(files)
     const dispatch = useDispatch()
@@ -22,9 +23,14 @@ const MainImage = ({files,setFiles}) => {
     })
 
     const renderFilePreview = file => {
-        
+
         if (file.type.startsWith('image')) {
-            dispatch(setCourseImage(file))
+            if (isBlogs) {
+                dispatch(setBlogImage(file))
+            }
+            else {
+                dispatch(setCourseImage(file))
+            }
             return <img className='rounded' alt={file.name} src={URL.createObjectURL(file)} height='28' width='28' />
         } else {
             return <FileText size='28' />
@@ -32,7 +38,12 @@ const MainImage = ({files,setFiles}) => {
     }
 
     const handleRemoveFile = file => {
-        dispatch(setCourseImage(false))
+        if (isBlogs) {
+            dispatch(setBlogImage(file))
+        }
+        else {
+            dispatch(setCourseImage(file))
+        }
         const uploadedFiles = files
         const filtered = uploadedFiles.filter(i => i.name !== file.name)
         setFiles([...filtered])

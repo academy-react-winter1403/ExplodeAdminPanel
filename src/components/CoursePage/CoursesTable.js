@@ -6,18 +6,14 @@ import { ValidURL } from './../../utility/ValidUrl';
 import { formatDate } from '../../utility/DateFormatter';
 import { courseDeleted, fetchCourseNotAcceptedComments, updateCourseStatus } from '../../redux/coursesSlice';
 import { deleteCourse, updateStatus } from '../../@core/services/courses';
-import { Eye, MessageSquare, RefreshCw, Trash2 } from 'react-feather';
+import { Eye, MessageSquare, RefreshCw, Trash2, XCircle } from 'react-feather';
 import Comment from './Comments';
 import { deleteBlog } from '../../@core/services/blogs';
 import { fetchBlogs } from '../../redux/blogSlice';
 
-
-
-
-
 const CoursesTable = () => {
     const { pathname } = useLocation()
-    const isBlogs = pathname == '/blogList' ? true : false
+    const isBlogs = pathname.includes('/blogList') ? true : false
     const { courses } = useSelector((state) => state.courses)
     const { blogs } = useSelector((state) => state.blogs)
     const content = isBlogs ? blogs : courses
@@ -32,6 +28,7 @@ const CoursesTable = () => {
     const handleStatus = async () => {
         setButtonLoading(true)
         await updateStatus(courseId, status, setButtonLoading, setCenteredModal)
+        dispatch(updateCourseStatus({ id: courseId, status: status }))
         setCenteredModal(!centeredModal)
         setButtonLoading(false)
     }
@@ -106,7 +103,7 @@ const CoursesTable = () => {
                                                 فعال
                                             </Badge> :
                                                 <Badge pill color='danger' className='me-1' style={{ padding: '10px 20px' }}>
-                                                    حذف شده
+                                                    غیر فعال 
                                                 </Badge>
                                             : item.isdelete ? <Badge pill color='danger' className='me-1'>
                                                 حذف شده
@@ -124,19 +121,26 @@ const CoursesTable = () => {
                                 </td>
                                 <td >
                                     {
-                                        !item.isdelete && <>
-                                            <Link to={`/coursedetail/${item.courseId}`} className='' style={{ display: 'inline' }}><Eye /></Link>
-                                            <MessageSquare className='cursor-pointer mx-1' onClick={() => { isBlogs ? setCourseId(item.id) : setCourseId(item.courseId); setCommentModal(!commentModal) }} />
-                                            {
-                                                isBlogs ?
-                                                    (item.isActive && <Trash2 onClick={() => { setCourseId(item.id); setDeleteModal(!deleteModal) }} className='cursor-pointer' />)
-                                                    :
-                                                    <Trash2 onClick={() => { setCourseId(item.courseId); setDeleteModal(!deleteModal) }} className='cursor-pointer' />
-                                            }
-                                            {
-                                                isBlogs && item.isActive == false && <RefreshCw className='cursor-pointer' onClick={() => { setRecoveryModal(true), setCourseId(item.id) }} />
-                                            }
-                                        </>
+                                        isBlogs ?
+                                            <>
+                                                {
+                                                    item.isActive ?
+                                                        <>
+                                                            <Link to={`/blogdetail/${item.id}`} className='' style={{ display: 'inline' }}><Eye /></Link>
+                                                            <MessageSquare className='cursor-pointer mx-1' onClick={() => { setCourseId(item.id); setCommentModal(!commentModal) }} />
+                                                            <XCircle onClick={() => { setCourseId(item.id); setDeleteModal(!deleteModal) }} className='cursor-pointer' />
+                                                        </>
+                                                        :
+                                                        <RefreshCw className='cursor-pointer' onClick={() => { setRecoveryModal(true), setCourseId(item.id) }} />
+                                                }
+                                            </>
+                                            :
+                                            !item.isdelete &&
+                                            <>
+                                                <Link to={`/coursedetail/${item.courseId}`} className='' style={{ display: 'inline' }}><Eye /></Link>
+                                                <MessageSquare className='cursor-pointer mx-1' onClick={() => { setCourseId(item.courseId); setCommentModal(!commentModal) }} />
+                                                <Trash2 onClick={() => { setCourseId(item.courseId); setDeleteModal(!deleteModal) }} className='cursor-pointer' />
+                                            </>
                                     }
                                 </td>
                             </tr>
@@ -166,9 +170,9 @@ const CoursesTable = () => {
 
             {/* Delete Modal */}
             <Modal isOpen={deleteModal} toggle={() => setDeleteModal(!deleteModal)} className='modal-dialog-centered'>
-                <ModalHeader toggle={() => setDeleteModal(!deleteModal)}>حذف دوره</ModalHeader>
+                <ModalHeader toggle={() => setDeleteModal(!deleteModal)}>{isBlogs ? 'غیر فعال کردن بلاگ' : 'حذف دوره'}</ModalHeader>
                 <ModalBody>
-                    آیا برای حذف این دوره مطمعن هستید؟
+                    {isBlogs ? 'آیا برای غیر فعال کردن این بلاگ مطمعن هستید؟' : 'آیا برای حذف این دوره مطمعن هستید؟'}
                 </ModalBody>
                 <ModalFooter className='justify-content-start'>
                     <Button color='primary ' onClick={handleDelete}>

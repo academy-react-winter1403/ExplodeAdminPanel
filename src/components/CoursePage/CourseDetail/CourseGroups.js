@@ -83,7 +83,6 @@ const CourseGroups = ({ courseGroups, courseId }) => {
                 GroupCapacity: selectedGroup.groupCapacity,
                 Id: selectedGroup.groupId,
                 CourseId: selectedGroup.courseId,
-
             })
         }
     }, [selectedGroup, reset])
@@ -133,7 +132,6 @@ const CourseGroups = ({ courseGroups, courseId }) => {
                                 عنوان
                             </Label>
                             <Controller
-
                                 control={control}
                                 id='GroupName'
                                 name='GroupName'

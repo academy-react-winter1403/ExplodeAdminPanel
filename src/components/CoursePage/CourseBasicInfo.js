@@ -12,6 +12,8 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import Select from 'react-select'
 import { selectThemeColors } from '@utils'
 import Flatpickr from 'react-flatpickr'
+import { CKEditor } from '@ckeditor/ckeditor5-react';
+import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 
 // ** Reactstrap Imports
 import { Form, Label, Input, Row, Col, Button, FormFeedback } from 'reactstrap'
@@ -30,12 +32,15 @@ import {
     setCourseType
 } from '../../redux/addCourseSlice'
 import { useLocation } from 'react-router-dom'
+import { fetchCategories, setBlogData } from './../../redux/blogCategoriesSlice';
 
-const CourseBasicInfo = ({ stepper }) => {
+const CourseBasicInfo = ({ stepper, isBlogs }) => {
     const [startPicker, setStartPicker] = useState(new Date())
     const [endPicker, setEndPicker] = useState(new Date())
-    const { pathname } = useLocation()
-    const isBlogs = pathname == '/blogList' ? true : false
+    const { categories } = useSelector((state) => state.blogCategories)
+    const finalCategories = categories?.map((item) => (
+        { value: item.id, label: item.categoryName }
+    ))
     const dispatch = useDispatch()
     const {
         courseTypes,
@@ -49,7 +54,6 @@ const CourseBasicInfo = ({ stepper }) => {
         capacity: yup.string().required('تعداد نفرات را وارد کنید'),
         sessionNumber: yup.string().required('تعداد جلسات را وارد کنید'),
         coursePrice: yup.string().required('قیمت دوره را وارد کنید'),
-
         courseType: yup.object({
             value: yup.string().required('نوع دوره را انتخاب کنید'),
         })
@@ -91,12 +95,44 @@ const CourseBasicInfo = ({ stepper }) => {
             .required('تاریخ پایان را انتخاب کنید'),
     });
 
+    const blogFieldsSchema = yup.object().shape({
+        blogTitle: yup.string()
+            .required('نام بلاگ را وارد کنید')
+            .min(10, 'نام بلاگ باید حداقل 10 کاراکتر باشد')
+            .max(120, 'نام بلاگ نمی‌تواند بیشتر از 150 کاراکتر باشد'),
+        googleTitle: yup.string()
+            .required('عنوان گوگل را وارد کنید')
+            .min(5, 'عنوان گوگل باید حداقل 5 کاراکتر باشد')
+            .max(70, 'عنوان گوگل نمی‌تواند بیشتر از 150 کاراکتر باشد'),
+        googleDescribe: yup.string()
+            .required('توضیح گوگل را وارد کنید')
+            .min(70, 'توضیح گوگل باید حداقل 70 کاراکتر باشد')
+            .max(150, 'توضیح گوگل نمی‌تواند بیشتر از 150 کاراکتر باشد'),
+        miniDescribe: yup.string()
+            .required('توضیح کوتاه را وارد کنید')
+            .min(10, 'توضیح کوتاه باید حداقل 10 کاراکتر باشد')
+            .max(300, 'توضیح کوتاه نمی‌تواند بیشتر از 300 کاراکتر باشد'),
+        keyWords: yup.string()
+            .required('کلمات کلیدی را وارد کنید')
+            .min(10, 'کلمات کلیدی باید حداقل 10 کاراکتر باشد')
+            .max(300, 'کلمات کلیدی نمی‌تواند بیشتر از 300 کاراکتر باشد'),
+        blogCategory: yup.object({
+            value: yup.string().required('دسته بندی بلاگ را انتخاب کنید'),
+        })
+            .nullable()
+            .required('دسته بندی بلاگ را انتخاب کنید'),
+
+        editorContent: yup.string()
+            .required('محتوای بلاگ را وارد کنید')
+            .min(38, 'محتوای بلاگ باید حداقل 38 کاراکتر باشد')
+    });
+
     const {
         control,
         handleSubmit,
         formState: { errors }
     } = useForm({
-        resolver: yupResolver(fieldsSchema),
+        resolver: yupResolver(isBlogs ? blogFieldsSchema : fieldsSchema),
         defaultValues: {
             courseType: null,
             termType: null,
@@ -110,23 +146,28 @@ const CourseBasicInfo = ({ stepper }) => {
 
 
     const onSubmit = (data) => {
-        dispatch(setCourseCapacity(data.capacity))
-        dispatch(setCourseSessionNumber(data.sessionNumber))
-        dispatch(setCourseCost(data.coursePrice))
-        dispatch(setCourseType(data.courseType?.value || null))
-        dispatch(setCourseTerm(data.termType?.value || null))
-        dispatch(setCourseClassRoom(data.classRoom?.value || null))
-        dispatch(setCourseLevel(data.courseLevel?.value || null))
-        dispatch(setCourseTeacher(data.courseTeacher?.value || null))
-        dispatch(setCourseStartTime(data.startDatePicker ? new Date(data.startDatePicker).toISOString() : null))
-        dispatch(setCourseEndTime(data.endDatePicker ? new Date(data.endDatePicker).toISOString() : null))
-        stepper.next()
+        if (isBlogs) {
+            dispatch(setBlogData(data))
+        }
+        else {
+            dispatch(setCourseCapacity(data.capacity))
+            dispatch(setCourseSessionNumber(data.sessionNumber))
+            dispatch(setCourseCost(data.coursePrice))
+            dispatch(setCourseType(data.courseType?.value || null))
+            dispatch(setCourseTerm(data.termType?.value || null))
+            dispatch(setCourseClassRoom(data.classRoom?.value || null))
+            dispatch(setCourseLevel(data.courseLevel?.value || null))
+            dispatch(setCourseTeacher(data.courseTeacher?.value || null))
+            dispatch(setCourseStartTime(data.startDatePicker ? new Date(data.startDatePicker).toISOString() : null))
+            dispatch(setCourseEndTime(data.endDatePicker ? new Date(data.endDatePicker).toISOString() : null))
 
+        }
+        stepper.next()
     };
 
     useEffect(() => {
         if (isBlogs) {
-
+            dispatch(fetchCategories())
         }
         else {
             dispatch(fetchCourseInfo());
@@ -136,283 +177,489 @@ const CourseBasicInfo = ({ stepper }) => {
     return (
         <Fragment>
             <div className='content-header'>
-                <h5 className='mb-0'>اطلاعات اولیه دوره</h5>
+                <h5 className='mb-0'>{isBlogs ? 'اطلاعات اولیه بلاگ' : 'اطلاعات اولیه دوره'}</h5>
                 <small className='text-muted'>لطفا با دقت اطلاعات را وارد کنید</small>
             </div>
             <Form onSubmit={handleSubmit(onSubmit)}>
                 <Row>
-                    <Col md='4' className='mb-1'>
-                        <Label className='form-label' for='capacity'>
-                            ظرفیت دوره
-                        </Label>
-                        <Controller
-                            id='capacity'
-                            name='capacity'
-                            control={control}
-                            render={({ field }) => (
-                                <Input
-                                    placeholder='تعداد نفرات'
-                                    invalid={errors.capacity && true}
-                                    {...field}
-                                />
-                            )}
-                        />
-                        {errors.capacity && (
-                            <FormFeedback style={{ display: 'block' }}>
-                                {errors.capacity.message}
-                            </FormFeedback>
-                        )}
-                    </Col>
-
-                    <Col md='4' className='mb-1'>
-                        <Label className='form-label' for='courseType'>
-                            نوع دوره
-                        </Label>
-                        <Controller
-                            name="courseType"
-                            control={control}
-                            render={({ field, fieldState: { error } }) => (
-                                <>
-                                    <Select
-                                        {...field}
-                                        theme={selectThemeColors}
-                                        isClearable={false}
-                                        id="course-type"
-                                        className={`react-select ${error ? 'is-invalid' : ''}`}
-                                        classNamePrefix='select'
-                                        options={courseTypes}
-                                        placeholder="انتخاب کنید"
+                    {
+                        isBlogs ?
+                            <>
+                                <Col md='4' className='mb-1'>
+                                    <Label className='form-label' for='blogTitle'>
+                                        عنوان
+                                    </Label>
+                                    <Controller
+                                        id='blogTitle'
+                                        name='blogTitle'
+                                        control={control}
+                                        render={({ field }) => (
+                                            <Input
+                                                placeholder='عنوان بلاگ'
+                                                invalid={errors.blogTitle && true}
+                                                {...field}
+                                            />
+                                        )}
                                     />
-                                    {error && (
+                                    {errors.blogTitle && (
                                         <FormFeedback style={{ display: 'block' }}>
-                                            {error.message}
+                                            {errors.blogTitle.message}
                                         </FormFeedback>
                                     )}
-                                </>
-                            )}
-                        />
-                    </Col>
+                                </Col>
 
-                    <Col md='4' className='mb-1'>
-                        <Label className='form-label' for='session-number'>
-                            تعداد جلسات
-                        </Label>
-                        <Controller
-                            id='session-number'
-                            name='sessionNumber'
-                            control={control}
-                            render={({ field }) => (
-                                <Input
-                                    placeholder='تعداد'
-                                    invalid={errors.sessionNumber && true}
-                                    {...field}
-                                />
-                            )}
-                        />
-                        {errors.sessionNumber && (
-                            <FormFeedback style={{ display: 'block' }}>
-                                {errors.sessionNumber.message}
-                            </FormFeedback>
-                        )}
-                    </Col>
-
-                    <Col md='4' className='mb-1'>
-                        <Label className='form-label' for='termType'>
-                            نوع ترم
-                        </Label>
-                        <Controller
-                            name="termType"
-                            control={control}
-                            render={({ field, fieldState: { error } }) => (
-                                <>
-                                    <Select
-                                        {...field}
-                                        theme={selectThemeColors}
-                                        isClearable={false}
-                                        id="term-type"
-                                        className={`react-select ${error ? 'is-invalid' : ''}`}
-                                        classNamePrefix='select'
-                                        options={courseTerms}
-                                        placeholder="انتخاب کنید"
+                                <Col md='4' className='mb-1'>
+                                    <Label className='form-label' for='googleTitle'>
+                                        عنوان گوگل
+                                    </Label>
+                                    <Controller
+                                        id='googleTitle'
+                                        name='googleTitle'
+                                        control={control}
+                                        render={({ field }) => (
+                                            <Input
+                                                placeholder='عنوان گوگل'
+                                                invalid={errors.googleTitle && true}
+                                                {...field}
+                                            />
+                                        )}
                                     />
-                                    {error && (
+
+                                    {errors.googleTitle && (
                                         <FormFeedback style={{ display: 'block' }}>
-                                            {error.message}
+                                            {errors.googleTitle.message}
                                         </FormFeedback>
                                     )}
-                                </>
-                            )}
-                        />
-                    </Col>
+                                </Col>
 
-                    <Col md='4' className='mb-1'>
-                        <Label className='form-label' for='classRoom'>
-                            کلاس دوره
-                        </Label>
-                        <Controller
-                            name="classRoom"
-                            control={control}
-                            render={({ field, fieldState: { error } }) => (
-                                <>
-                                    <Select
-                                        {...field}
-                                        theme={selectThemeColors}
-                                        isClearable={false}
-                                        id="classRoom"
-                                        className={`react-select ${error ? 'is-invalid' : ''}`}
-                                        classNamePrefix='select'
-                                        options={courseClassRooms}
-                                        placeholder="انتخاب کنید"
+                                <Col md='4' className='mb-1'>
+                                    <Label className='form-label' for='googleDescribe'>
+                                        توضیح گوگل
+                                    </Label>
+                                    <Controller
+                                        id='googleDescribe'
+                                        name='googleDescribe'
+                                        control={control}
+                                        render={({ field }) => (
+                                            <Input
+                                                placeholder='توضیح گوگل'
+                                                invalid={errors.googleDescribe && true}
+                                                {...field}
+                                            />
+                                        )}
                                     />
-                                    {error && (
+
+                                    {errors.googleDescribe && (
                                         <FormFeedback style={{ display: 'block' }}>
-                                            {error.message}
+                                            {errors.googleDescribe.message}
                                         </FormFeedback>
                                     )}
-                                </>
-                            )}
-                        />
-                    </Col>
+                                </Col>
 
-                    <Col md='4' className='mb-1'>
-                        <Label className='form-label' for='courseLevel'>
-                            سطح دوره
-                        </Label>
-                        <Controller
-                            name="courseLevel"
-                            control={control}
-                            render={({ field, fieldState: { error } }) => (
-                                <>
-                                    <Select
-                                        {...field}
-                                        theme={selectThemeColors}
-                                        isClearable={false}
-                                        id="courseLevel"
-                                        className={`react-select ${error ? 'is-invalid' : ''}`}
-                                        classNamePrefix='select'
-                                        options={courseLevels}
-                                        placeholder="انتخاب کنید"
+                                <Col md='4' className='mb-1'>
+                                    <Label className='form-label' for='miniDescribe'>
+                                        توضیح کوتاه
+                                    </Label>
+                                    <Controller
+                                        id='miniDescribe'
+                                        name='miniDescribe'
+                                        control={control}
+                                        render={({ field }) => (
+                                            <Input
+                                                placeholder='توضیحات کوتاه'
+                                                invalid={errors.miniDescribe && true}
+                                                {...field}
+                                            />
+                                        )}
                                     />
-                                    {error && (
+
+                                    {errors.miniDescribe && (
                                         <FormFeedback style={{ display: 'block' }}>
-                                            {error.message}
+                                            {errors.miniDescribe.message}
                                         </FormFeedback>
                                     )}
-                                </>
-                            )}
-                        />
-                    </Col>
+                                </Col>
 
-                    <Col md='4' className='mb-1'>
-                        <Label className='form-label' for='courseTeacher'>
-                            مدرس دوره
-                        </Label>
-                        <Controller
-                            name="courseTeacher"
-                            control={control}
-                            render={({ field, fieldState: { error } }) => (
-                                <>
-                                    <Select
-                                        {...field}
-                                        value={field.value}
-                                        theme={selectThemeColors}
-                                        isClearable={false}
-                                        id="courseTeacher"
-                                        className={`react-select ${error ? 'is-invalid' : ''}`}
-                                        classNamePrefix='select'
-                                        options={courseTeachers}
-                                        placeholder="انتخاب کنید"
+                                <Col md='4' className='mb-1'>
+                                    <Label className='form-label' for='keyWords'>
+                                        کلمات کلیدی
+                                    </Label>
+                                    <Controller
+                                        id='keyWords'
+                                        name='keyWords'
+                                        control={control}
+                                        render={({ field }) => (
+                                            <Input
+                                                placeholder='کلمات کلیدی'
+                                                invalid={errors.keyWords && true}
+                                                {...field}
+                                            />
+                                        )}
                                     />
-                                    {error && (
+
+                                    {errors.keyWords && (
                                         <FormFeedback style={{ display: 'block' }}>
-                                            {error.message}
+                                            {errors.keyWords.message}
                                         </FormFeedback>
                                     )}
-                                </>
-                            )}
-                        />
-                    </Col>
+                                </Col>
 
-                    <Col md='4' className='mb-1'>
-                        <Label className='form-label' for='coursePrice'>
-                            قیمت دوره
-                        </Label>
-                        <Controller
-                            id='coursePrice'
-                            name='coursePrice'
-                            control={control}
-                            render={({ field }) => (
-                                <Input
-                                    placeholder='تومان'
-                                    invalid={errors.coursePrice && true}
-                                    {...field}
-                                />
-                            )}
-                        />
-                        {errors.coursePrice && (
-                            <FormFeedback style={{ display: 'block' }}>
-                                {errors.coursePrice.message}
-                            </FormFeedback>
-                        )}
-                    </Col>
-
-                    <Col md='4' className='mb-1'>
-                        <Label className='form-label' for='startDatePicker'>
-                            تاریخ شروع
-                        </Label>
-                        <Controller
-                            name="startDatePicker"
-                            control={control}
-                            render={({ field, fieldState: { error } }) => (
-                                <>
-                                    <Flatpickr
-                                        className={`form-control ${error ? 'is-invalid' : ''}`}
-                                        value={field.value}
-                                        onChange={date => {
-                                            field.onChange(date)
-                                            setStartPicker(date)
-                                        }}
-                                        id='startDatePicker'
-                                        placeholder="انتخاب تاریخ"
+                                <Col md='4' className='mb-1'>
+                                    <Label className='form-label' for='blogCategory'>
+                                        دسته بندی دوره
+                                    </Label>
+                                    <Controller
+                                        name="blogCategory"
+                                        control={control}
+                                        render={({ field, fieldState: { error } }) => (
+                                            <>
+                                                <Select
+                                                    {...field}
+                                                    value={field.value}
+                                                    theme={selectThemeColors}
+                                                    isClearable={false}
+                                                    id="blogCategory"
+                                                    className={`react-select ${error ? 'is-invalid' : ''}`}
+                                                    classNamePrefix='select'
+                                                    options={finalCategories}
+                                                    placeholder="انتخاب کنید"
+                                                />
+                                                {error && (
+                                                    <FormFeedback style={{ display: 'block' }}>
+                                                        {error.message}
+                                                    </FormFeedback>
+                                                )}
+                                            </>
+                                        )}
                                     />
-                                    {error && (
+                                </Col>
+
+                                <Col md='12' className='mb-1'>
+                                    <Label className='form-label' for='editorContent'>
+                                        محتوای بلاگ
+                                    </Label>
+                                    <Controller
+                                        name="editorContent"
+                                        control={control}
+                                        defaultValue=""
+                                        render={({ field }) => (
+                                            <CKEditor
+                                                editor={ClassicEditor}
+                                                data={field.value || ''}
+                                                onReady={(editor) => {
+                                                    editor.editing.view.change((writer) => {
+                                                        writer.setStyle('min-height', '500px', editor.editing.view.document.getRoot());
+                                                        writer.setStyle('max-height', '800px', editor.editing.view.document.getRoot());
+                                                        writer.setStyle('overflow-y', 'auto', editor.editing.view.document.getRoot());
+                                                    });
+                                                }}
+                                                onChange={(event, editor) => {
+                                                    const data = editor.getData();
+                                                    field.onChange(data);
+
+                                                }}
+                                                config={{
+                                                    language: 'fa',
+                                                    toolbar: [
+                                                        'heading', '|',
+                                                        'bold', 'italic', 'link', 'bulletedList', 'numberedList', 'blockQuote', '|',
+                                                        'imageUpload', 'insertTable', 'mediaEmbed', '|',
+                                                        'undo', 'redo'
+                                                    ],
+                                                    image: {
+                                                        toolbar: [
+                                                            'imageTextAlternative',
+                                                            'imageStyle:inline',
+                                                            'imageStyle:block',
+                                                            'imageStyle:side'
+                                                        ]
+                                                    }
+                                                }}
+                                            />
+                                        )}
+                                    />
+                                    {errors.editorContent && (
                                         <FormFeedback style={{ display: 'block' }}>
-                                            {error.message}
+                                            {errors.editorContent.message}
                                         </FormFeedback>
                                     )}
-                                </>
-                            )}
-                        />
-                    </Col>
-
-                    <Col md='4' className='mb-1'>
-                        <Label className='form-label' for='endDatePicker'>
-                            تاریخ پایان
-                        </Label>
-                        <Controller
-                            name="endDatePicker"
-                            control={control}
-                            render={({ field, fieldState: { error } }) => (
-                                <>
-                                    <Flatpickr
-                                        className={`form-control ${error ? 'is-invalid' : ''}`}
-                                        value={field.value}
-                                        onChange={date => {
-                                            field.onChange(date)
-                                            setEndPicker(date)
-                                        }}
-                                        id='endDatePicker'
-                                        placeholder="انتخاب تاریخ"
+                                </Col>
+                            </> :
+                            <>
+                                <Col md='4' className='mb-1'>
+                                    <Label className='form-label' for='capacity'>
+                                        ظرفیت دوره
+                                    </Label>
+                                    <Controller
+                                        id='capacity'
+                                        name='capacity'
+                                        control={control}
+                                        render={({ field }) => (
+                                            <Input
+                                                placeholder='تعداد نفرات'
+                                                invalid={errors.capacity && true}
+                                                {...field}
+                                            />
+                                        )}
                                     />
-                                    {error && (
+                                    {errors.capacity && (
                                         <FormFeedback style={{ display: 'block' }}>
-                                            {error.message}
+                                            {errors.capacity.message}
                                         </FormFeedback>
                                     )}
-                                </>
-                            )}
-                        />
-                    </Col>
+                                </Col>
+
+                                <Col md='4' className='mb-1'>
+                                    <Label className='form-label' for='courseType'>
+                                        نوع دوره
+                                    </Label>
+                                    <Controller
+                                        name="courseType"
+                                        control={control}
+                                        render={({ field, fieldState: { error } }) => (
+                                            <>
+                                                <Select
+                                                    {...field}
+                                                    theme={selectThemeColors}
+                                                    isClearable={false}
+                                                    id="course-type"
+                                                    className={`react-select ${error ? 'is-invalid' : ''}`}
+                                                    classNamePrefix='select'
+                                                    options={courseTypes}
+                                                    placeholder="انتخاب کنید"
+                                                />
+                                                {error && (
+                                                    <FormFeedback style={{ display: 'block' }}>
+                                                        {error.message}
+                                                    </FormFeedback>
+                                                )}
+                                            </>
+                                        )}
+                                    />
+                                </Col>
+
+                                <Col md='4' className='mb-1'>
+                                    <Label className='form-label' for='session-number'>
+                                        تعداد جلسات
+                                    </Label>
+                                    <Controller
+                                        id='session-number'
+                                        name='sessionNumber'
+                                        control={control}
+                                        render={({ field }) => (
+                                            <Input
+                                                placeholder='تعداد'
+                                                invalid={errors.sessionNumber && true}
+                                                {...field}
+                                            />
+                                        )}
+                                    />
+                                    {errors.sessionNumber && (
+                                        <FormFeedback style={{ display: 'block' }}>
+                                            {errors.sessionNumber.message}
+                                        </FormFeedback>
+                                    )}
+                                </Col>
+
+                                <Col md='4' className='mb-1'>
+                                    <Label className='form-label' for='termType'>
+                                        نوع ترم
+                                    </Label>
+                                    <Controller
+                                        name="termType"
+                                        control={control}
+                                        render={({ field, fieldState: { error } }) => (
+                                            <>
+                                                <Select
+                                                    {...field}
+                                                    theme={selectThemeColors}
+                                                    isClearable={false}
+                                                    id="term-type"
+                                                    className={`react-select ${error ? 'is-invalid' : ''}`}
+                                                    classNamePrefix='select'
+                                                    options={courseTerms}
+                                                    placeholder="انتخاب کنید"
+                                                />
+                                                {error && (
+                                                    <FormFeedback style={{ display: 'block' }}>
+                                                        {error.message}
+                                                    </FormFeedback>
+                                                )}
+                                            </>
+                                        )}
+                                    />
+                                </Col>
+
+                                <Col md='4' className='mb-1'>
+                                    <Label className='form-label' for='classRoom'>
+                                        کلاس دوره
+                                    </Label>
+                                    <Controller
+                                        name="classRoom"
+                                        control={control}
+                                        render={({ field, fieldState: { error } }) => (
+                                            <>
+                                                <Select
+                                                    {...field}
+                                                    theme={selectThemeColors}
+                                                    isClearable={false}
+                                                    id="classRoom"
+                                                    className={`react-select ${error ? 'is-invalid' : ''}`}
+                                                    classNamePrefix='select'
+                                                    options={courseClassRooms}
+                                                    placeholder="انتخاب کنید"
+                                                />
+                                                {error && (
+                                                    <FormFeedback style={{ display: 'block' }}>
+                                                        {error.message}
+                                                    </FormFeedback>
+                                                )}
+                                            </>
+                                        )}
+                                    />
+                                </Col>
+
+                                <Col md='4' className='mb-1'>
+                                    <Label className='form-label' for='courseLevel'>
+                                        سطح دوره
+                                    </Label>
+                                    <Controller
+                                        name="courseLevel"
+                                        control={control}
+                                        render={({ field, fieldState: { error } }) => (
+                                            <>
+                                                <Select
+                                                    {...field}
+                                                    theme={selectThemeColors}
+                                                    isClearable={false}
+                                                    id="courseLevel"
+                                                    className={`react-select ${error ? 'is-invalid' : ''}`}
+                                                    classNamePrefix='select'
+                                                    options={courseLevels}
+                                                    placeholder="انتخاب کنید"
+                                                />
+                                                {error && (
+                                                    <FormFeedback style={{ display: 'block' }}>
+                                                        {error.message}
+                                                    </FormFeedback>
+                                                )}
+                                            </>
+                                        )}
+                                    />
+                                </Col>
+
+                                <Col md='4' className='mb-1'>
+                                    <Label className='form-label' for='courseTeacher'>
+                                        مدرس دوره
+                                    </Label>
+                                    <Controller
+                                        name="courseTeacher"
+                                        control={control}
+                                        render={({ field, fieldState: { error } }) => (
+                                            <>
+                                                <Select
+                                                    {...field}
+                                                    value={field.value}
+                                                    theme={selectThemeColors}
+                                                    isClearable={false}
+                                                    id="courseTeacher"
+                                                    className={`react-select ${error ? 'is-invalid' : ''}`}
+                                                    classNamePrefix='select'
+                                                    options={courseTeachers}
+                                                    placeholder="انتخاب کنید"
+                                                />
+                                                {error && (
+                                                    <FormFeedback style={{ display: 'block' }}>
+                                                        {error.message}
+                                                    </FormFeedback>
+                                                )}
+                                            </>
+                                        )}
+                                    />
+                                </Col>
+
+                                <Col md='4' className='mb-1'>
+                                    <Label className='form-label' for='coursePrice'>
+                                        قیمت دوره
+                                    </Label>
+                                    <Controller
+                                        id='coursePrice'
+                                        name='coursePrice'
+                                        control={control}
+                                        render={({ field }) => (
+                                            <Input
+                                                placeholder='تومان'
+                                                invalid={errors.coursePrice && true}
+                                                {...field}
+                                            />
+                                        )}
+                                    />
+                                    {errors.coursePrice && (
+                                        <FormFeedback style={{ display: 'block' }}>
+                                            {errors.coursePrice.message}
+                                        </FormFeedback>
+                                    )}
+                                </Col>
+
+                                <Col md='4' className='mb-1'>
+                                    <Label className='form-label' for='startDatePicker'>
+                                        تاریخ شروع
+                                    </Label>
+                                    <Controller
+                                        name="startDatePicker"
+                                        control={control}
+                                        render={({ field, fieldState: { error } }) => (
+                                            <>
+                                                <Flatpickr
+                                                    className={`form-control ${error ? 'is-invalid' : ''}`}
+                                                    value={field.value}
+                                                    onChange={date => {
+                                                        field.onChange(date)
+                                                        setStartPicker(date)
+                                                    }}
+                                                    id='startDatePicker'
+                                                    placeholder="انتخاب تاریخ"
+                                                />
+                                                {error && (
+                                                    <FormFeedback style={{ display: 'block' }}>
+                                                        {error.message}
+                                                    </FormFeedback>
+                                                )}
+                                            </>
+                                        )}
+                                    />
+                                </Col>
+
+                                <Col md='4' className='mb-1'>
+                                    <Label className='form-label' for='endDatePicker'>
+                                        تاریخ پایان
+                                    </Label>
+                                    <Controller
+                                        name="endDatePicker"
+                                        control={control}
+                                        render={({ field, fieldState: { error } }) => (
+                                            <>
+                                                <Flatpickr
+                                                    className={`form-control ${error ? 'is-invalid' : ''}`}
+                                                    value={field.value}
+                                                    onChange={date => {
+                                                        field.onChange(date)
+                                                        setEndPicker(date)
+                                                    }}
+                                                    id='endDatePicker'
+                                                    placeholder="انتخاب تاریخ"
+                                                />
+                                                {error && (
+                                                    <FormFeedback style={{ display: 'block' }}>
+                                                        {error.message}
+                                                    </FormFeedback>
+                                                )}
+                                            </>
+                                        )}
+                                    />
+                                </Col>
+                            </>
+                    }
                 </Row>
                 <div className='d-flex justify-content-end'>
                     <Button type='submit' color='primary' className='btn-next'>

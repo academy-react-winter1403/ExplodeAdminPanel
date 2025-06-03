@@ -7,13 +7,15 @@ import { nanoid } from '@reduxjs/toolkit'
 import MainImage from './MainImage';
 import { fetchEditCourse, setCourseId, setCourseImage, setCourseUUID } from '../../../redux/editCourse';
 import { useNavigate } from 'react-router-dom';
+import { updateBlogInfo } from '../../../@core/services/blogs';
 
-const ImageUploader = ({ stepper, courseData, courseId }) => {
+const ImageUploader = ({ stepper, courseData, courseId, isBlogs }) => {
     const dispatch = useDispatch()
     const navigate = useNavigate()
     const [loading, setLoading] = useState(false)
 
     const { courseTitle } = useSelector((state) => state.addCourse)
+    const { newBlogData, blogId, blogImage } = useSelector((state) => state.blogCategories)
     const [files, setFiles] = useState([])
     const generateUniqueUrlString = (title) => {
         const slug = title
@@ -29,22 +31,35 @@ const ImageUploader = ({ stepper, courseData, courseId }) => {
     };
 
     const handleOnClick = async () => {
-        console.log(courseData.imageAddress)
-        dispatch(setCourseId(courseData.courseId))
-        dispatch(setCourseUUID(generateUniqueUrlString(courseTitle)))
-        setLoading(true)
-        const result = await dispatch(fetchEditCourse(setLoading))
-        dispatch(setCourseImage(null))
-        setLoading(false)
-        if (result.payload.id) {
-            setFiles([])
-            navigate(`/coursedetail/${result.payload.id}`)
+
+        try {
+            setLoading(true)
+            if (isBlogs) {
+                await updateBlogInfo(newBlogData, blogId, blogImage)
+                navigate(`/blogdetail/${blogId}`)
+                
+            }
+            else {
+                dispatch(setCourseId(courseData.courseId))
+                dispatch(setCourseUUID(generateUniqueUrlString(courseTitle)))
+                const result = await dispatch(fetchEditCourse(setLoading))
+                dispatch(setCourseImage(null))
+                if (result.payload.id) {
+                    setFiles([])
+                    navigate(`/coursedetail/${result.payload.id}`)
+                }
+            }
+            setLoading(false)
         }
+        catch {
+            setLoading(false)
+        }
+
     }
     return (
         <Fragment>
             <Row>
-                <MainImage files={files} setFiles={setFiles} />
+                <MainImage files={files} setFiles={setFiles} isBlogs={isBlogs} />
             </Row>
             <div className='d-flex justify-content-between'>
                 <Button type='button' color='primary' className='btn-prev' onClick={() => stepper.previous()}>

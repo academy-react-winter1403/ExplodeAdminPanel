@@ -22,6 +22,7 @@ const CommentDetail = ({ detailModal, setDetailModal, commentId, courseId, comme
         }
     };
     useEffect(() => {
+
         if (isBlogs) {
             if (detailModal && commentId && courseId) {
                 dispatch(setBlogId(courseId))
@@ -38,7 +39,9 @@ const CommentDetail = ({ detailModal, setDetailModal, commentId, courseId, comme
                 dispatch(setCourseId(courseId))
             }
         }
+
     }, [detailModal, commentId, courseId])
+
     return (
         <>
             <Modal isOpen={detailModal} toggle={() => setDetailModal(!detailModal)} className='modal-dialog-centered modal-lg'>
