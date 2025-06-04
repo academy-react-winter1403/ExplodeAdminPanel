@@ -26,7 +26,7 @@ export const deleteBlog = async (blogId, status) => {
 
 export const getBlogsReplies = async (commentId) => {
     try {
-        const response = await instance.get('/News/GetRepliesComments', { params: { Id: commentId } });
+        const response = await instance.get('/News/GetAdminRepliesComments', { params: { CommentId: commentId } });
         return response;
     } catch (error) {
         console.error('Error:', error);

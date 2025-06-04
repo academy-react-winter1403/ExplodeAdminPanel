@@ -56,12 +56,7 @@ const CoursesTable = () => {
     }
 
     useEffect(() => {
-        if (isBlogs) {
-
-        }
-        else {
-            dispatch(fetchCourseNotAcceptedComments())
-        }
+        dispatch(fetchCourseNotAcceptedComments())
     }, [])
     return (
         <>
@@ -103,7 +98,7 @@ const CoursesTable = () => {
                                                 فعال
                                             </Badge> :
                                                 <Badge pill color='danger' className='me-1' style={{ padding: '10px 20px' }}>
-                                                    غیر فعال 
+                                                    غیر فعال
                                                 </Badge>
                                             : item.isdelete ? <Badge pill color='danger' className='me-1'>
                                                 حذف شده
