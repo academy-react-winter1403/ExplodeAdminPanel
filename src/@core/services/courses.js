@@ -329,3 +329,25 @@ export const changeCourseStatus = async (courseId, statusId) => {
         throw error;
     };
 }
+
+
+export const getAllAssistance = async () => {
+    try {
+        const response = await instance.get(`/CourseAssistance`)
+        return response
+    } catch (error) {
+        console.error("Error:", error);
+        throw error;
+    };
+}
+
+
+export const addAssistance = async (id, uId) => {
+    try {
+        const response = await instance.post(`/CourseAssistance`, { courseId: id, userId: uId })
+        return response
+    } catch (error) {
+        console.error("Error:", error);
+        throw error;
+    };
+}

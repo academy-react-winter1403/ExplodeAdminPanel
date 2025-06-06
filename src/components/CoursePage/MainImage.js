@@ -12,8 +12,7 @@ import { setCourseImage } from '../../redux/addCourseSlice'
 import { setBlogImage } from '../../redux/blogCategoriesSlice'
 
 const MainImage = ({ files, setFiles, isBlogs }) => {
-    // ** State
-    console.log(files)
+
     const dispatch = useDispatch()
     const { getRootProps, getInputProps } = useDropzone({
         multiple: false,

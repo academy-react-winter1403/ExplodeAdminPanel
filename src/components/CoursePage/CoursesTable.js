@@ -5,11 +5,14 @@ import { Badge, Button, Col, Modal, ModalBody, ModalFooter, ModalHeader, Spinner
 import { ValidURL } from './../../utility/ValidUrl';
 import { formatDate } from '../../utility/DateFormatter';
 import { courseDeleted, fetchCourseNotAcceptedComments, updateCourseStatus } from '../../redux/coursesSlice';
-import { deleteCourse, updateStatus } from '../../@core/services/courses';
-import { Eye, MessageSquare, RefreshCw, Trash2, XCircle } from 'react-feather';
+import { deleteCourse, getAllAssistance, updateStatus } from '../../@core/services/courses';
+import { Eye, MessageSquare, RefreshCw, Trash2, Users, XCircle } from 'react-feather';
 import Comment from './Comments';
 import { deleteBlog } from '../../@core/services/blogs';
 import { fetchBlogs } from '../../redux/blogSlice';
+import Assistance from './Assistance';
+import { fetchAllAssistance } from '../../redux/courseDetailSlice';
+import { getAllUsers } from '../../@core/services/Users';
 
 const CoursesTable = () => {
     const { pathname } = useLocation()
@@ -17,14 +20,17 @@ const CoursesTable = () => {
     const { courses } = useSelector((state) => state.courses)
     const { blogs } = useSelector((state) => state.blogs)
     const content = isBlogs ? blogs : courses
+    const dispatch = useDispatch()
     const [centeredModal, setCenteredModal] = useState(false)
     const [deleteModal, setDeleteModal] = useState(false)
     const [courseId, setCourseId] = useState(null)
     const [status, setStatus] = useState(false)
     const [recoveryModal, setRecoveryModal] = useState(false)
-    const dispatch = useDispatch()
     const [buttonLoading, setButtonLoading] = useState(false)
     const [commentModal, setCommentModal] = useState(false)
+    const [assistanceModal, setAssistanceModal] = useState(false)
+    const [courseTitle, setCourseTitle] = useState(null)
+    const [assistanceUser, setAssistanceUser] = useState([])
     const handleStatus = async () => {
         setButtonLoading(true)
         await updateStatus(courseId, status, setButtonLoading, setCenteredModal)
@@ -54,9 +60,19 @@ const CoursesTable = () => {
         setRecoveryModal(false)
         setButtonLoading(false)
     }
-
+    const fetchAssistanceUsers = async () => {
+        const { listUser } = await getAllUsers({
+            IsActiveUser: true,
+            roleId: 6
+        })
+        setAssistanceUser(listUser)
+    }
     useEffect(() => {
-        dispatch(fetchCourseNotAcceptedComments())
+        if (!isBlogs) {
+            dispatch(fetchCourseNotAcceptedComments())
+            dispatch(fetchAllAssistance())
+            fetchAssistanceUsers()
+        }
     }, [])
     return (
         <>
@@ -134,6 +150,7 @@ const CoursesTable = () => {
                                             <>
                                                 <Link to={`/coursedetail/${item.courseId}`} className='' style={{ display: 'inline' }}><Eye /></Link>
                                                 <MessageSquare className='cursor-pointer mx-1' onClick={() => { setCourseId(item.courseId); setCommentModal(!commentModal) }} />
+                                                <Users className='mx-1 cursor-pointer' onClick={() => { setAssistanceModal(true), setCourseTitle(item.title), setCourseId(item.courseId) }} />
                                                 <Trash2 onClick={() => { setCourseId(item.courseId); setDeleteModal(!deleteModal) }} className='cursor-pointer' />
                                             </>
                                     }
@@ -203,6 +220,14 @@ const CoursesTable = () => {
                 isBlogs={isBlogs}
             />
 
+            {/* Assistance Modal */}
+            <Assistance
+                courseId={courseId}
+                assistanceModal={assistanceModal}
+                setAssistanceModal={setAssistanceModal}
+                courseTitle={courseTitle}
+                assistanceUser={assistanceUser}
+            />
         </>
 
     )

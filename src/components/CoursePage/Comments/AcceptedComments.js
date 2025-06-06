@@ -49,7 +49,6 @@ const AcceptedComments = ({ courseId, isBlogs }) => {
     }
     useEffect(() => {
         handleComments()
-
     }, [])
 
     useEffect(() => {

@@ -183,7 +183,7 @@ const CourseGroups = ({ courseGroups, courseId }) => {
 
             {/* Add Group Modal */}
             <Modal isOpen={addModal} toggle={() => setAddModal(!addModal)} className='modal-dialog-centered'>
-                <ModalHeader toggle={() => setAddModal(!addModal)}>ویرایش گروه</ModalHeader>
+                <ModalHeader toggle={() => setAddModal(!addModal)}>اضافه کردن گروه</ModalHeader>
                 <ModalBody>
                     <Form onSubmit={handleSubmit(addOnSubmit)}>
                         <div className='mb-1'>
