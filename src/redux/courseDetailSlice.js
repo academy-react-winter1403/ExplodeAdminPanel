@@ -1,11 +1,19 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { getAllAssistance } from "../@core/services/courses";
+import { getAllAssistance, getAssistanceWork } from "../@core/services/courses";
 
 export const fetchAllAssistance = createAsyncThunk(
     "courseDetail/fetchAllAssistance",
     async () => {
         const result = await getAllAssistance()
         return result
+    }
+)
+
+export const fetchAllAssisWorks = createAsyncThunk(
+    "courseDetail/fetchAllAssisWorks",
+    async (params) => {
+        const { assistanceWorkDtos } = await getAssistanceWork(params)
+        return { assistanceWorkDtos }
     }
 )
 
@@ -19,7 +27,8 @@ export const courseDetailSlice = createSlice({
         coursePaymentsNotDone: [],
         coursePaymentListNotAccept: [],
         courseStatusValue: null,
-        courseAssistanceList: []
+        courseAssistanceList: [],
+        assisWorksList: []
     },
     reducers: {
         setCourseGroups: (state, action) => {
@@ -48,6 +57,10 @@ export const courseDetailSlice = createSlice({
         builder
             .addCase(fetchAllAssistance.fulfilled, (state, action) => {
                 state.courseAssistanceList = action.payload
+            })
+
+            .addCase(fetchAllAssisWorks.fulfilled, (state, action) => {
+                state.assisWorksList = action.payload.assistanceWorkDtos
             })
     }
 })

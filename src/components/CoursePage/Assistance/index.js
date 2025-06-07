@@ -3,11 +3,12 @@ import { Users } from 'react-feather'
 import { Button, CardBody, Col, Form, Label, Modal, ModalBody, ModalFooter, ModalHeader, Row, Spinner } from 'reactstrap'
 import AssistanceListTable from './AssistanceListTable'
 import { Controller, useForm } from 'react-hook-form'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import Select from 'react-select'
 import { selectThemeColors } from '@utils'
 import { addAssistance } from '../../../@core/services/courses'
 import { fetchAllAssistance } from '../../../redux/courseDetailSlice'
+import toast from 'react-hot-toast'
 
 const Assistance = ({ courseTitle, courseId, assistanceModal, setAssistanceModal, assistanceUser }) => {
     const [addModal, setAddModal] = useState(false)
@@ -35,7 +36,7 @@ const Assistance = ({ courseTitle, courseId, assistanceModal, setAssistanceModal
     return (
         <>
             {/* Assistance Table Modal */}
-            <Modal isOpen={assistanceModal} toggle={() => setAssistanceModal(!assistanceModal)} className='modal-dialog-centered modal-lg'>
+            <Modal isOpen={assistanceModal} toggle={() => setAssistanceModal(!assistanceModal)} className='modal-dialog-centered modal-xl'>
                 <ModalHeader toggle={() => setAssistanceModal(!assistanceModal)}><span style={{ fontWeight: 'bold' }}><Users className='mx-1' /> دستیار دوره برای : {courseTitle}</span></ModalHeader>
                 <ModalBody>
                     <CardBody>
@@ -98,6 +99,7 @@ const Assistance = ({ courseTitle, courseId, assistanceModal, setAssistanceModal
                 </ModalBody>
 
             </Modal>
+
         </>
     )
 }

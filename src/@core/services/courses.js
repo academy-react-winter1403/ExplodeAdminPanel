@@ -351,3 +351,59 @@ export const addAssistance = async (id, uId) => {
         throw error;
     };
 }
+
+export const updateAssistance = async (id, uId, assisId) => {
+    try {
+        const response = await instance.put(`/CourseAssistance`, { courseId: id, userId: uId, id: assisId })
+        return response
+    } catch (error) {
+        console.error("Error:", error);
+        throw error;
+    };
+}
+
+export const getAssistanceWork = async (assisId) => {
+    try {
+        const response = await instance.get(`/CourseAssistance/${assisId}`)
+        return response
+    } catch (error) {
+        console.error("Error:", error);
+        throw error;
+    };
+}
+
+export const addAssistanceWork = async (title, describe, assisId, date) => {
+    try {
+        const response = await instance.post(`/AssistanceWork`,
+            {
+                workTitle: title,
+                workDescribe: describe,
+                assistanceId: assisId,
+                workDate: date,
+
+            }
+        )
+        return response
+    } catch (error) {
+        console.error("Error:", error);
+        throw error;
+    };
+}
+
+export const editAssistanceWork = async (title, describe, assisId, date, workId) => {
+    try {
+        const response = await instance.put(`/AssistanceWork`,
+            {
+                workTitle: title,
+                workDescribe: describe,
+                assistanceId: assisId,
+                workDate: date,
+                id: workId
+            }
+        )
+        return response
+    } catch (error) {
+        console.error("Error:", error);
+        throw error;
+    };
+}
