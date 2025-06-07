@@ -407,3 +407,64 @@ export const editAssistanceWork = async (title, describe, assisId, date, workId)
         throw error;
     };
 }
+
+
+export const getBuildings = async () => {
+    try {
+        const response = await instance.get(`/Building`)
+        return response
+    } catch (error) {
+        console.error("Error:", error);
+        throw error;
+    };
+}
+
+export const createBuildings = async (buildName, wDate, floor, latitude, longitude) => {
+    try {
+        const response = await instance.post(`/Building`, {
+
+            buildingName: buildName,
+            workDate: wDate,
+            floor: floor,
+            latitude: latitude,
+            longitude: longitude
+        })
+        return response
+    } catch (error) {
+        console.error("Error:", error);
+        throw error;
+    };
+}
+
+export const editBuildings = async (params) => {
+    try {
+        const response = await instance.put(`/Building`, {
+            id: params.id,
+            buildingName: params.buildingName,
+            workDate: params.workDate,
+            floor: params.floor,
+            latitude: params.latitude,
+            longitude: params.longitude,
+            active: params.active
+        })
+        return response
+    } catch (error) {
+        console.error("Error:", error);
+        throw error;
+    };
+}
+
+
+
+export const buildingStatus = async (id, status) => {
+    try {
+        const response = await instance.put(`/Building/Active`, {
+            active: status,
+            id: id
+        })
+        return response
+    } catch (error) {
+        console.error("Error:", error);
+        throw error;
+    };
+}

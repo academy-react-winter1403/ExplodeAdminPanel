@@ -1,4 +1,4 @@
-import { Mail, Map, Home, Book, Circle, FolderPlus } from "react-feather";
+import { Mail, Map, Home, Book, Circle, FolderPlus, Bold, Box } from "react-feather";
 
 export default [
   {
@@ -52,5 +52,11 @@ export default [
         navLink: '/addNewCatgeory',
       },
     ]
-  }
+  },
+  {
+    id: "buildings",
+    title: "مدیریت ساختمان ها",
+    icon:<Box /> ,
+    navLink: "/Buildings",
+  },
 ];

@@ -220,7 +220,6 @@ const AssistanceListTable = ({ courseId, assistanceUser }) => {
                     <CardBody>
                         <AssisWorksTable
                             assisId={assistanceId}
-
                         />
                     </CardBody>
                 </ModalBody>

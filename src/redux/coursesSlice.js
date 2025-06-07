@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { courseCommentReplies, courseComments, getAllCourses, getNotAcceptedComments } from './../@core/services/courses';
+import { courseCommentReplies, courseComments, getAllCourses, getBuildings, getNotAcceptedComments } from './../@core/services/courses';
 
 export const fetchAllCourses = createAsyncThunk(
     "courses/fetchAllCourses",
@@ -10,7 +10,7 @@ export const fetchAllCourses = createAsyncThunk(
             RowsOfPage: state.rowsOfPage !== null || state.rowsOfPage !== '' ? state.rowsOfPage : 10,
             Query: state.query,
             SortType: 'DESC',
-            SortingCol:'lastUpdate'
+            SortingCol: 'lastUpdate'
         })
         return { courseDtos, totalCount }
     }
@@ -60,6 +60,14 @@ export const fetchCourseNotAcceptedComments = createAsyncThunk(
     }
 )
 
+export const fetchBuldings = createAsyncThunk(
+    "courses/fetchBuldings",
+    async () => {
+        const result = await getBuildings()
+        return result
+    }
+)
+
 export const coursesSlice = createSlice({
     name: "courses",
     initialState: {
@@ -79,7 +87,9 @@ export const coursesSlice = createSlice({
         activeCourses: 0,
         notActiveCourses: 0,
         deletedCourses: 0,
-        allCoursesCount: 0
+        allCoursesCount: 0,
+        activeBuildings: [],
+        notActiveBuildings: [],
     },
     reducers: {
         setCurrentPage: (state, action) => {
@@ -144,6 +154,12 @@ export const coursesSlice = createSlice({
         },
         setRowsOfPage: (state, action) => {
             state.rowsOfPage = action.payload
+        },
+        setActiveBuildings: (state, action) => {
+            state.activeBuildings = action.payload
+        },
+        setNotActiveBuildings: (state, action) => {
+            state.notActiveBuildings = action.payload
         }
     },
     extraReducers: (builder) => {
@@ -200,7 +216,10 @@ export const coursesSlice = createSlice({
                 state.deletedCourses = action.payload.courseDtos.filter((c) => c.isdelete == true).length;
                 state.allCoursesCount = action.payload.totalCount
             })
-
+            .addCase(fetchBuldings.fulfilled, (state, action) => {
+                state.activeBuildings = action.payload.filter((b) => b.active == true)
+                state.notActiveBuildings = action.payload.filter((b) => b.active == false)
+            })
     },
 });
 
@@ -216,6 +235,8 @@ export const {
     setNotAcceptedReplies,
     setNotAcceptedMain,
     setComments,
-    setRowsOfPage
+    setRowsOfPage,
+    setActiveBuildings,
+    setNotActiveBuildings
 } = coursesSlice.actions
 export default coursesSlice.reducer;

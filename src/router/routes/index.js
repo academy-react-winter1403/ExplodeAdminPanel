@@ -13,6 +13,7 @@ import PublicRoute from "@components/routes/PublicRoute";
 // ** Utils
 import { isObjEmpty } from "@utils";
 import UserView from "../../components/UserPage/UsersDetailsPage";
+import Buildings from "../../pages/Buildings";
 
 const getLayout = {
   blank: <BlankLayout />,
@@ -88,6 +89,10 @@ const Routes = [
   {
     path: '/addNewCatgeory',
     element: <AddNewCategory />
+  },
+  {
+    path: '/buildings',
+    element: <Buildings />
   },
   {
     path: "/login",
