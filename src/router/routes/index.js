@@ -43,6 +43,7 @@ const AddNewCategory = lazy(() => import("../../pages/AddNewCategory"));
 const Buildings = lazy(() => import("../../pages/Buildings"));
 const ClassRooms = lazy(() => import("../../pages/ClassRoom"));
 const CourseLevels = lazy(() => import("../../pages/CourseLevels"));
+const Departments = lazy(() => import("../../pages/Departments"));
 // ** Merge Routes
 const Routes = [
   {
@@ -101,6 +102,10 @@ const Routes = [
   {
     path: '/courselevels',
     element: <CourseLevels />
+  },
+  {
+    path: '/departments',
+    element: <Departments />
   },
   {
     path: "/login",

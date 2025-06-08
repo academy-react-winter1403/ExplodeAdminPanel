@@ -543,3 +543,40 @@ export const createCourseLevel = async (params) => {
         throw error;
     };
 }
+
+export const getDeparments = async () => {
+    try {
+        const response = await instance.get(`/Department`)
+        return response
+    } catch (error) {
+        console.error("Error:", error);
+        throw error;
+    };
+}
+
+export const createDepartment = async (params) => {
+    try {
+        const response = await instance.post(`/Department`, {
+            depName: params.depName,
+            buildingId: params.buildingId
+        })
+        return response
+    } catch (error) {
+        console.error("Error:", error);
+        throw error;
+    };
+}
+
+export const editDepartment = async (params) => {
+    try {
+        const response = await instance.put(`/Department`, {
+            id: params.id,
+            depName: params.depName,
+            buildingId: params.buildingId
+        })
+        return response
+    } catch (error) {
+        console.error("Error:", error);
+        throw error;
+    };
+}

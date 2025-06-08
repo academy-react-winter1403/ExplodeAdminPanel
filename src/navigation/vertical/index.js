@@ -71,4 +71,10 @@ export default [
     icon:<Box /> ,
     navLink: "/Buildings",
   },
+  {
+    id: "department",
+    title: "مدیریت دپارتمان ها",
+    icon:<Box /> ,
+    navLink: "/departments",
+  },
 ];
