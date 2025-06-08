@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { courseCommentReplies, courseComments, getAllCourses, getBuildings, getNotAcceptedComments } from './../@core/services/courses';
+import { courseCommentReplies, courseComments, getAllCourses, getBuildings, getClassRooms, getCourseLevels, getNotAcceptedComments } from './../@core/services/courses';
 
 export const fetchAllCourses = createAsyncThunk(
     "courses/fetchAllCourses",
@@ -68,6 +68,23 @@ export const fetchBuldings = createAsyncThunk(
     }
 )
 
+
+export const fetchClassRooms = createAsyncThunk(
+    "courses/fetchClassRooms",
+    async () => {
+        const result = await getClassRooms()
+        return result
+    }
+)
+
+export const fetchCourseLevels = createAsyncThunk(
+    "courses/fetchCourseLevels",
+    async () => {
+        const result = await getCourseLevels()
+        return result
+    }
+)
+
 export const coursesSlice = createSlice({
     name: "courses",
     initialState: {
@@ -90,6 +107,8 @@ export const coursesSlice = createSlice({
         allCoursesCount: 0,
         activeBuildings: [],
         notActiveBuildings: [],
+        classRoomsList: [],
+        courseLevelsList: []
     },
     reducers: {
         setCurrentPage: (state, action) => {
@@ -99,6 +118,12 @@ export const coursesSlice = createSlice({
             const { id, status } = action.payload
             const course = state.courses.find(c => c.courseId === id)
             course.isActive = status
+        },
+        setClassRooms: (state, action) => {
+            state.classRoomsList = action.payload;
+        },
+        setCourseLevels: (state, action) => {
+            state.courseLevelsList = action.payload;
         },
         courseDeleted: (state, action) => {
             const { id } = action.payload
@@ -220,6 +245,12 @@ export const coursesSlice = createSlice({
                 state.activeBuildings = action.payload.filter((b) => b.active == true)
                 state.notActiveBuildings = action.payload.filter((b) => b.active == false)
             })
+            .addCase(fetchClassRooms.fulfilled, (state, action) => {
+                state.classRoomsList = action.payload
+            })
+            .addCase(fetchCourseLevels.fulfilled, (state, action) => {
+                state.courseLevelsList = action.payload
+            })
     },
 });
 
@@ -237,6 +268,8 @@ export const {
     setComments,
     setRowsOfPage,
     setActiveBuildings,
-    setNotActiveBuildings
+    setNotActiveBuildings,
+    setClassRooms,
+    setCourseLevels,
 } = coursesSlice.actions
 export default coursesSlice.reducer;

@@ -30,6 +30,18 @@ export default [
         title: "لیست دوره ها",
         icon: <Circle size={12} />,
         navLink: '/coursesList',
+      },
+      {
+        id: "classRoom",
+        title: "مدیریت کلاس ها",
+        icon: <Circle size={12} />,
+        navLink: '/classrooms',
+      },
+      {
+        id: "classRoom",
+        title: "مدیریت سطح دوره ها ",
+        icon: <Circle size={12} />,
+        navLink: '/courselevels',
       }
     ]
     ,

@@ -468,3 +468,78 @@ export const buildingStatus = async (id, status) => {
         throw error;
     };
 }
+
+export const getClassRooms = async () => {
+    try {
+        const response = await instance.get(`/ClassRoom`)
+        return response
+    } catch (error) {
+        console.error("Error:", error);
+        throw error;
+    };
+}
+
+
+export const createClassRoom = async (params) => {
+    try {
+        const response = await instance.post(`/ClassRoom`, {
+            classRoomName: params.classRoomName,
+            capacity: params.capacity,
+            buildingId: params.buildingId
+        })
+        return response
+    } catch (error) {
+        console.error("Error:", error);
+        throw error;
+    };
+}
+
+export const editClassRoom = async (params) => {
+    try {
+        const response = await instance.put(`/ClassRoom`, {
+            id: params.id,
+            classRoomName: params.classRoomName,
+            capacity: params.capacity,
+            buildingId: params.buildingId
+        })
+        return response
+    } catch (error) {
+        console.error("Error:", error);
+        throw error;
+    };
+}
+
+export const getCourseLevels = async () => {
+    try {
+        const response = await instance.get(`/CourseLevel/GetAllCourseLevel`)
+        return response
+    } catch (error) {
+        console.error("Error:", error);
+        throw error;
+    };
+}
+
+export const editCourseLevel = async (params) => {
+    try {
+        const response = await instance.put(`/CourseLevel`, {
+            id: params.id,
+            levelName: params.levelName
+        })
+        return response
+    } catch (error) {
+        console.error("Error:", error);
+        throw error;
+    };
+}
+
+export const createCourseLevel = async (params) => {
+    try {
+        const response = await instance.post(`/CourseLevel`, {
+            levelName: params.levelName
+        })
+        return response
+    } catch (error) {
+        console.error("Error:", error);
+        throw error;
+    };
+}

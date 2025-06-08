@@ -13,7 +13,7 @@ import PublicRoute from "@components/routes/PublicRoute";
 // ** Utils
 import { isObjEmpty } from "@utils";
 import UserView from "../../components/UserPage/UsersDetailsPage";
-import Buildings from "../../pages/Buildings";
+
 
 const getLayout = {
   blank: <BlankLayout />,
@@ -38,11 +38,11 @@ const Sample = lazy(() => import("../../pages/Sample"));
 const UsersDetails = lazy(() => import("../../pages/UsersDetails"));
 const CoursesList = lazy(() => import("../../pages/CoursesList"));
 const CourseDetail = lazy(() => import("../../pages/CourseDetail"));
-const blogDetail = lazy(() => import("../../pages/CourseDetail"));
 const EditCourse = lazy(() => import("../../pages/EditCourse"));
-const EditBlog = lazy(() => import("../../pages/EditCourse"));
 const AddNewCategory = lazy(() => import("../../pages/AddNewCategory"));
-
+const Buildings = lazy(() => import("../../pages/Buildings"));
+const ClassRooms = lazy(() => import("../../pages/ClassRoom"));
+const CourseLevels = lazy(() => import("../../pages/CourseLevels"));
 // ** Merge Routes
 const Routes = [
   {
@@ -93,6 +93,14 @@ const Routes = [
   {
     path: '/buildings',
     element: <Buildings />
+  },
+  {
+    path: '/classrooms',
+    element: <ClassRooms />
+  },
+  {
+    path: '/courselevels',
+    element: <CourseLevels />
   },
   {
     path: "/login",
