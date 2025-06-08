@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { courseCommentReplies, courseComments, getAllCourses, getBuildings, getClassRooms, getCourseLevels, getDeparments, getNotAcceptedComments } from './../@core/services/courses';
+import { courseCommentReplies, courseComments, getAllCourses, getBuildings, getClassRooms, getCourseLevels, getCourseStatus, getDeparments, getNotAcceptedComments } from './../@core/services/courses';
 
 export const fetchAllCourses = createAsyncThunk(
     "courses/fetchAllCourses",
@@ -85,6 +85,14 @@ export const fetchCourseLevels = createAsyncThunk(
     }
 )
 
+export const fetchAllStatus = createAsyncThunk(
+    "courses/fetchAllStatus",
+    async () => {
+        const result = await getCourseStatus()
+        return result
+    }
+)
+
 export const fetchDepartments = createAsyncThunk(
     "courses/fetchDepartments",
     async () => {
@@ -117,7 +125,8 @@ export const coursesSlice = createSlice({
         notActiveBuildings: [],
         classRoomsList: [],
         courseLevelsList: [],
-        departmentsList: []
+        departmentsList: [],
+        courseStatusList: []
     },
     reducers: {
         setCurrentPage: (state, action) => {
@@ -133,6 +142,9 @@ export const coursesSlice = createSlice({
         },
         setCourseLevels: (state, action) => {
             state.courseLevelsList = action.payload;
+        },
+        setCourseStatusList: (state, action) => {
+            state.courseStatusList = action.payload;
         },
         setDepartments: (state, action) => {
             state.departmentsList = action.payload;
@@ -265,6 +277,9 @@ export const coursesSlice = createSlice({
             })
             .addCase(fetchDepartments.fulfilled, (state, action) => {
                 state.departmentsList = action.payload
+            })
+            .addCase(fetchAllStatus.fulfilled, (state, action) => {
+                state.courseStatusList = action.payload
             })
     },
 

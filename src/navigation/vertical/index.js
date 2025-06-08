@@ -42,7 +42,13 @@ export default [
         title: "مدیریت سطح دوره ها ",
         icon: <Circle size={12} />,
         navLink: '/courselevels',
-      }
+      },
+      {
+        id: "statuses",
+        title: "مدیریت وضعیت دوره ها ",
+        icon: <Circle size={12} />,
+        navLink: '/coursestatus',
+      },
     ]
     ,
   },

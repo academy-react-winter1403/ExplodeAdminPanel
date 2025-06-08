@@ -44,6 +44,7 @@ const Buildings = lazy(() => import("../../pages/Buildings"));
 const ClassRooms = lazy(() => import("../../pages/ClassRoom"));
 const CourseLevels = lazy(() => import("../../pages/CourseLevels"));
 const Departments = lazy(() => import("../../pages/Departments"));
+const CourseStatus = lazy(() => import("../../pages/CourseStatus"));
 // ** Merge Routes
 const Routes = [
   {
@@ -106,6 +107,10 @@ const Routes = [
   {
     path: '/departments',
     element: <Departments />
+  },
+  {
+    path: '/coursestatus',
+    element: <CourseStatus />
   },
   {
     path: "/login",

@@ -580,3 +580,43 @@ export const editDepartment = async (params) => {
         throw error;
     };
 }
+
+
+export const createStatus = async (params) => {
+    try {
+        const response = await instance.post(`/Status`, {
+            statusName: params.statusName,
+            describe: params.describe,
+            statusNumber: params.statusNumber
+        })
+        return response
+    } catch (error) {
+        console.error("Error:", error);
+        throw error;
+    };
+}
+
+export const getCourseStatus = async (params) => {
+    try {
+        const response = await instance.get(`/Status`)
+        return response
+    } catch (error) {
+        console.error("Error:", error);
+        throw error;
+    };
+}
+
+export const editStatus = async (params) => {
+    try {
+        const response = await instance.put(`/Status`, {
+            id: params.id,
+            statusName: params.statusName,
+            describe: params.describe,
+            statusNumber: params.statusNumber
+        })
+        return response
+    } catch (error) {
+        console.error("Error:", error);
+        throw error;
+    };
+}
