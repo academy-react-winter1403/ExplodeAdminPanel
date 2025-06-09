@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Edit } from 'react-feather'
 import ReactPaginate from 'react-paginate'
 import { useDispatch, useSelector } from 'react-redux'
 import { Alert, Button, Col, Form, FormFeedback, Input, Label, Modal, ModalBody, ModalFooter, ModalHeader, Row, Spinner, Table } from 'reactstrap'
 import { Controller, useForm } from 'react-hook-form'
-import { createCourseLevel, createStatus, editCourseLevel, editStatus } from '../../../@core/services/courses'
-import { fetchAllStatus, setCourseLevels } from '../../../redux/coursesSlice'
+import { createStatus, editStatus } from '../../../@core/services/courses'
+import { fetchAllStatus } from '../../../redux/coursesSlice'
 
 const CourseStatusTable = () => {
     const { courseStatusList } = useSelector((state) => state.courses)

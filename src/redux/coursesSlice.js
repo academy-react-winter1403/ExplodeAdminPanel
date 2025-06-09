@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { courseCommentReplies, courseComments, getAllCourses, getBuildings, getClassRooms, getCourseLevels, getCourseStatus, getDeparments, getNotAcceptedComments } from './../@core/services/courses';
+import { courseCommentReplies, courseComments, getAllCourses, getBuildings, getClassRooms, getCourseLevels, getCourseStatus, getDeparments, getNotAcceptedComments, getTechnologies } from './../@core/services/courses';
 
 export const fetchAllCourses = createAsyncThunk(
     "courses/fetchAllCourses",
@@ -101,6 +101,14 @@ export const fetchDepartments = createAsyncThunk(
     }
 )
 
+export const fetchAllTechnologies = createAsyncThunk(
+    "courses/fetchAllTechnologies",
+    async () => {
+        const result = await getTechnologies()
+        return result
+    }
+)
+
 export const coursesSlice = createSlice({
     name: "courses",
     initialState: {
@@ -126,7 +134,8 @@ export const coursesSlice = createSlice({
         classRoomsList: [],
         courseLevelsList: [],
         departmentsList: [],
-        courseStatusList: []
+        courseStatusList: [],
+        technologyList: []
     },
     reducers: {
         setCurrentPage: (state, action) => {
@@ -139,6 +148,9 @@ export const coursesSlice = createSlice({
         },
         setClassRooms: (state, action) => {
             state.classRoomsList = action.payload;
+        },
+        setTechnologies: (state, action) => {
+            state.technologyList = action.payload;
         },
         setCourseLevels: (state, action) => {
             state.courseLevelsList = action.payload;
@@ -281,6 +293,9 @@ export const coursesSlice = createSlice({
             .addCase(fetchAllStatus.fulfilled, (state, action) => {
                 state.courseStatusList = action.payload
             })
+            .addCase(fetchAllTechnologies.fulfilled, (state, action) => {
+                state.technologyList = action.payload
+            })
     },
 
 });
@@ -303,5 +318,6 @@ export const {
     setClassRooms,
     setCourseLevels,
     setDepartments,
+    setTechnologies
 } = coursesSlice.actions
 export default coursesSlice.reducer;

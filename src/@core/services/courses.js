@@ -596,7 +596,7 @@ export const createStatus = async (params) => {
     };
 }
 
-export const getCourseStatus = async (params) => {
+export const getCourseStatus = async () => {
     try {
         const response = await instance.get(`/Status`)
         return response
@@ -613,6 +613,47 @@ export const editStatus = async (params) => {
             statusName: params.statusName,
             describe: params.describe,
             statusNumber: params.statusNumber
+        })
+        return response
+    } catch (error) {
+        console.error("Error:", error);
+        throw error;
+    };
+}
+
+export const getTechnologies = async () => {
+    try {
+        const response = await instance.get(`/Technology`)
+        return response
+    } catch (error) {
+        console.error("Error:", error);
+        throw error;
+    };
+}
+
+export const createTechnology = async (params) => {
+    try {
+        const response = await instance.post(`/Technology`, {
+            techName: params.techName,
+            parentId: params.parentId,
+            describe: params.describe,
+            iconAddress: params.iconAddress
+        })
+        return response
+    } catch (error) {
+        console.error("Error:", error);
+        throw error;
+    };
+}
+
+export const editTechnology = async (params) => {
+    try {
+        const response = await instance.put(`/Technology`, {
+            id: params.id,
+            techName: params.techName,
+            parentId: params.parentId,
+            describe: params.describe,
+            iconAddress: params.iconAddress
         })
         return response
     } catch (error) {

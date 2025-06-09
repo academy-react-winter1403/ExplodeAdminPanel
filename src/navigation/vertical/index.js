@@ -49,6 +49,12 @@ export default [
         icon: <Circle size={12} />,
         navLink: '/coursestatus',
       },
+      {
+        id: "technology",
+        title: "مدیریت تکنولوژی ها  ",
+        icon: <Circle size={12} />,
+        navLink: '/technologies',
+      },
     ]
     ,
   },
