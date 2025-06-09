@@ -195,7 +195,7 @@ const TechnologiesTable = () => {
                     : <Alert color='warning' className='p-1' style={{ fontSize: '20px', fontWeight: 'bold' }}>موردی یافت نشد</Alert>
             }
 
-            {/* Add New ClassRoom */}
+            {/* Add New Technology */}
             <Modal isOpen={addModal} toggle={() => setAddModal(!addModal)} className='modal-dialog-centered'>
                 <ModalHeader toggle={() => setAddModal(!addModal)}>ایجاد تکنولوژی جدید</ModalHeader>
                 <ModalBody>
@@ -303,7 +303,7 @@ const TechnologiesTable = () => {
                 </ModalBody>
             </Modal>
 
-            {/* Edit ClassRoom */}
+            {/* Edit Technology */}
             <Modal isOpen={editModal} toggle={() => setEditModal(!editModal)} className='modal-dialog-centered'>
                 <ModalHeader toggle={() => setEditModal(!editModal)}>ویرایش تکنولوژی</ModalHeader>
                 <ModalBody>
