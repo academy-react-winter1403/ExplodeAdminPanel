@@ -106,7 +106,7 @@ const CustomHeader = ({
       <Row>
         <Col xl="6" className="d-flex align-items-center p-0">
           <div className="d-flex align-items-center w-100">
-            <label htmlFor="rows-per-page">Show</label>
+            <label htmlFor="rows-per-page">نمایش</label>
             <Input
               className="mx-50"
               type="select"
@@ -119,7 +119,7 @@ const CustomHeader = ({
               <option value="25">25</option>
               <option value="50">50</option>
             </Input>
-            <label htmlFor="rows-per-page">Entries</label>
+            <label htmlFor="rows-per-page">تعداد</label>
           </div>
         </Col>
         <Col
@@ -127,8 +127,12 @@ const CustomHeader = ({
           className="d-flex align-items-sm-center justify-content-xl-end justify-content-start flex-xl-nowrap flex-wrap flex-sm-row flex-column pe-xl-1 p-0 mt-xl-0 mt-1"
         >
           <div className="d-flex align-items-center mb-sm-0 mb-1 me-1">
-            <label className="mb-0" htmlFor="search-invoice">
-              Search:
+            <label
+              className="mb-0 w-full"
+              htmlFor="search-invoice"
+              style={{ whiteSpace: "nowrap" }}
+            >
+              جست و جو:
             </label>
             <Input
               id="search-invoice"
@@ -143,31 +147,15 @@ const CustomHeader = ({
             <UncontrolledDropdown className="me-1">
               <DropdownToggle color="secondary" caret outline>
                 <Share className="font-small-4 me-50" />
-                <span className="align-middle">Export</span>
+                <span className="align-middle">خروجی</span>
               </DropdownToggle>
               <DropdownMenu>
-                <DropdownItem className="w-100">
-                  <Printer className="font-small-4 me-50" />
-                  <span className="align-middle">Print</span>
-                </DropdownItem>
                 <DropdownItem
                   className="w-100"
                   onClick={() => downloadCSV(store.data)}
                 >
                   <FileText className="font-small-4 me-50" />
                   <span className="align-middle">CSV</span>
-                </DropdownItem>
-                <DropdownItem className="w-100">
-                  <Grid className="font-small-4 me-50" />
-                  <span className="align-middle">Excel</span>
-                </DropdownItem>
-                <DropdownItem className="w-100">
-                  <File className="font-small-4 me-50" />
-                  <span className="align-middle">PDF</span>
-                </DropdownItem>
-                <DropdownItem className="w-100">
-                  <Copy className="font-small-4 me-50" />
-                  <span className="align-middle">Copy</span>
                 </DropdownItem>
               </DropdownMenu>
             </UncontrolledDropdown>
@@ -177,7 +165,7 @@ const CustomHeader = ({
               color="primary"
               onClick={toggleSidebar}
             >
-              Add New User
+              اضافه کردن کاربر جدید
             </Button>
           </div>
         </Col>
@@ -200,12 +188,12 @@ const UsersList = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [currentRole, setCurrentRole] = useState({
     value: "",
-    label: "Select Role",
+    label: "انتخاب نقش",
   });
 
   const [currentStatus, setCurrentStatus] = useState({
     value: "",
-    label: "Select Status",
+    label: "انتخاب وضعیت",
     number: 0,
   });
 
@@ -230,17 +218,17 @@ const UsersList = () => {
 
   // ** User filter options
   const roleOptions = [
-    { value: "", label: "Select Role" },
-    { value: "1", label: "Administrator" },
-    { value: "2", label: "Teacher" },
-    { value: "8", label: "Referee" },
-    { value: "5", label: "Student" },
+    { value: "", label: "انتخاب نقش" },
+    { value: "1", label: "ادمین" },
+    { value: "2", label: "مدرس" },
+    { value: "8", label: "داور" },
+    { value: "5", label: "دانشجو" },
   ];
 
   const statusOptions = [
-    { value: "", label: "Select Status", number: 0 },
-    { value: "active", label: "Active", number: 2 },
-    { value: "inactive", label: "Inactive", number: 3 },
+    { value: "", label: "انتخاب نقش", number: 0 },
+    { value: "active", label: "فعال", number: 2 },
+    { value: "inactive", label: "غیر فعال", number: 3 },
   ];
 
   // ** Function in get data on page change
@@ -361,12 +349,12 @@ const UsersList = () => {
     <Fragment>
       <Card>
         <CardHeader>
-          <CardTitle tag="h4">Filters</CardTitle>
+          <CardTitle tag="h4">فیلترها</CardTitle>
         </CardHeader>
         <CardBody>
           <Row>
             <Col md="4">
-              <Label for="role-select">Role</Label>
+              <Label for="role-select">نقش</Label>
               <Select
                 isClearable={false}
                 value={currentRole}
@@ -393,7 +381,7 @@ const UsersList = () => {
             </Col>
 
             <Col md="4">
-              <Label for="status-select">Status</Label>
+              <Label for="status-select">وضعیت</Label>
               <Select
                 theme={selectThemeColors}
                 isClearable={false}

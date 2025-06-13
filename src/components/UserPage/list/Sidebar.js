@@ -107,7 +107,7 @@ const SidebarNewUsers = ({ open, toggleSidebar }) => {
     <Sidebar
       size="lg"
       open={open}
-      title="New User"
+      title="کاربر جدید"
       headerClassName="mb-1"
       contentClassName="pt-0"
       toggleSidebar={toggleSidebar}
@@ -116,7 +116,7 @@ const SidebarNewUsers = ({ open, toggleSidebar }) => {
       <Form onSubmit={handleSubmit(onSubmit)}>
         <div className="mb-1">
           <Label className="form-label" for="firstname">
-            Full Name <span className="text-danger">*</span>
+            نام <span className="text-danger">*</span>
           </Label>
           <Controller
             name="firstname"
@@ -133,7 +133,7 @@ const SidebarNewUsers = ({ open, toggleSidebar }) => {
         </div>
         <div className="mb-1">
           <Label className="form-label" for="lastname">
-            lastname <span className="text-danger">*</span>
+            نام خانوادگی <span className="text-danger">*</span>
           </Label>
           <Controller
             name="lastname"
@@ -150,7 +150,7 @@ const SidebarNewUsers = ({ open, toggleSidebar }) => {
         </div>
         <div className="mb-1">
           <Label className="form-label" for="usergmail">
-            Gmail <span className="text-danger">*</span>
+            جیمیل <span className="text-danger">*</span>
           </Label>
           <Controller
             name="gmail"
@@ -169,7 +169,7 @@ const SidebarNewUsers = ({ open, toggleSidebar }) => {
 
         <div className="mb-1">
           <Label className="form-label" for="phoneNumber">
-            PhoneNumber <span className="text-danger">*</span>
+            شماره تلفن همراه <span className="text-danger">*</span>
           </Label>
           <Controller
             name="phoneNumber"
@@ -186,7 +186,7 @@ const SidebarNewUsers = ({ open, toggleSidebar }) => {
         </div>
         <div className="mb-1">
           <Label className="form-label" for="password">
-            Password <span className="text-danger">*</span>
+            رمز عبور <span className="text-danger">*</span>
           </Label>
           <Controller
             name="password"
@@ -207,7 +207,7 @@ const SidebarNewUsers = ({ open, toggleSidebar }) => {
 
         <div className="mb-1">
           <Label className="form-label" for="isstudent">
-            Student <span className="text-danger">*</span>
+            دانشجو <span className="text-danger">*</span>
           </Label>
           <Input
             type="select"
@@ -226,7 +226,7 @@ const SidebarNewUsers = ({ open, toggleSidebar }) => {
         </div>
         <div className="mb-1">
           <Label className="form-label" for="isteacher">
-            Teacher <span className="text-danger">*</span>
+            مدرس <span className="text-danger">*</span>
           </Label>
           <Input
             type="select"
@@ -244,10 +244,10 @@ const SidebarNewUsers = ({ open, toggleSidebar }) => {
           </Input>
         </div>
         <Button type="submit" className="me-1" color="primary">
-          Submit
+          تایید
         </Button>
         <Button type="reset" color="secondary" outline onClick={toggleSidebar}>
-          Cancel
+          لغو
         </Button>
       </Form>
     </Sidebar>

@@ -9,8 +9,7 @@ import {
   getUserById,
   updateUserApi,
 } from "../@core/services/Users";
-// ** Other Axios Calls (if needed)
-import axios from "axios";
+
 import toast from "react-hot-toast";
 
 // Get all data (بدون فیلتر)
@@ -97,6 +96,7 @@ export const appUsersSlice = createSlice({
       .addCase(getUser.fulfilled, (state, action) => {
         state.selectedUser = action.payload;
       });
+    //کیس های دیگه رو ننوشتم چون عملیات های دیگه از سمت بک اند دسترسی نداریم پس صرفا فقط در خواست میره
   },
 });
 

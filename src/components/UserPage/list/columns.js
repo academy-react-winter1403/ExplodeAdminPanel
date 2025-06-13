@@ -154,7 +154,7 @@ export const columns = [
     ),
   },
   {
-    name: "Role",
+    name: "نقش",
     sortable: true,
     minWidth: "172px",
     sortField: "role",
@@ -162,7 +162,7 @@ export const columns = [
     cell: (row) => renderRole(row),
   },
   {
-    name: "createDate",
+    name: "ایحاد شده در",
     minWidth: "138px",
     sortable: true,
     sortField: "insertDate",
@@ -170,7 +170,7 @@ export const columns = [
     cell: (row) => <span className="text-capitalize">{row.insertDate}</span>,
   },
   {
-    name: "CompletionPer",
+    name: "درصد تکمیل پروفایل",
     minWidth: "230px",
     sortable: true,
     sortField: "CompletionPer",
@@ -182,7 +182,7 @@ export const columns = [
     ),
   },
   {
-    name: "Status",
+    name: "وضعیت",
     minWidth: "138px",
     sortable: true,
     sortField: "status",
@@ -198,7 +198,7 @@ export const columns = [
     ),
   },
   {
-    name: "Actions",
+    name: "عملیات",
     minWidth: "100px",
     cell: (row) => (
       <div className="column-action">

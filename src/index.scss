@@ -1,2 +1,169 @@
-@import '../node_modules/prismjs/themes/prism-tomorrow';
-@import './assets/scss/app.scss';
+@import "../node_modules/prismjs/themes/prism-tomorrow";
+@import "./assets/scss/app.scss";
+/* طرح اصلی کارت */
+.best-course-card {
+  position: relative;
+  width: 320px;
+  background: linear-gradient(135deg, #2b2d42 0%, #1e1f2e 100%);
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  overflow: hidden;
+  transition: transform 0.3s ease;
+  color: #fff;
+  font-family: "Vazir", sans-serif; /* فونت فارسی */
+}
+
+.best-course-card:hover {
+  transform: translateY(-5px);
+}
+
+/* افکت نور */
+.card-glow {
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(
+    circle,
+    rgba(115, 103, 240, 0.1) 0%,
+    transparent 70%
+  );
+  animation: rotate-glow 10s linear infinite;
+}
+
+@keyframes rotate-glow {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* بنر دوره برتر */
+.course-badge {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: #7367f0;
+  padding: 6px 12px;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  font-size: 12px;
+  z-index: 2;
+}
+
+.badge-icon {
+  margin-left: 5px;
+}
+
+/* تصویر دوره */
+.course-image-container {
+  position: relative;
+  width: 100%;
+  height: 160px;
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 15px;
+}
+
+.course-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.course-image-container:hover .course-image {
+  transform: scale(1.05);
+}
+
+.image-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 50%;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.7), transparent);
+}
+
+/* اطلاعات دوره */
+.course-details h3 {
+  margin: 0 0 10px 0;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.course-stats {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 15px;
+}
+
+.stat-item {
+  display: flex;
+  align-items: center;
+  font-size: 13px;
+  color: #ddd;
+}
+
+.stat-icon {
+  margin-left: 5px;
+  color: #7367f0;
+}
+
+/* نمودار پیشرفت */
+.progress-container {
+  width: 100px;
+  height: 100px;
+  margin: 0 auto 15px;
+}
+
+.progress-label {
+  display: block;
+  text-align: center;
+  font-size: 12px;
+  color: #aaa;
+  margin-top: 5px;
+}
+
+/* رتبه و ستاره‌ها */
+.rank-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.rank-circle {
+  width: 40px;
+  height: 40px;
+  background: #ff9f43;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  box-shadow: 0 0 10px rgba(255, 159, 67, 0.5);
+}
+
+.stars {
+  display: flex;
+  align-items: center;
+}
+
+.star {
+  color: #555;
+  font-size: 16px;
+}
+
+.star.filled {
+  color: #ffd700;
+}
+
+.rating-text {
+  margin-right: 5px;
+  font-size: 14px;
+}

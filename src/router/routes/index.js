@@ -1,5 +1,4 @@
-// ** React Imports
-import { Fragment, lazy } from "react";
+import { Fragment, lazy, memo } from "react";
 import { Navigate } from "react-router-dom";
 // ** Layouts
 import BlankLayout from "@layouts/BlankLayout";
@@ -13,11 +12,17 @@ import PublicRoute from "@components/routes/PublicRoute";
 // ** Utils
 import { isObjEmpty } from "@utils";
 import UserView from "../../components/UserPage/UsersDetailsPage";
+import CalendarComponent from "../../pages/Calendar";
+
+// ** Memoized Layouts
+const MemoizedBlankLayout = memo(BlankLayout);
+const MemoizedVerticalLayout = memo(VerticalLayout);
+const MemoizedHorizontalLayout = memo(HorizontalLayout);
 
 const getLayout = {
-  blank: <BlankLayout />,
-  vertical: <VerticalLayout />,
-  horizontal: <HorizontalLayout />,
+  blank: <MemoizedBlankLayout />,
+  vertical: <MemoizedVerticalLayout />,
+  horizontal: <MemoizedHorizontalLayout />,
 };
 
 // ** Document title
@@ -44,7 +49,7 @@ const Routes = [
     element: <Navigate replace to={DefaultRoute} />,
   },
   {
-    path: "home",
+    path: "/home",
     element: <Home />,
   },
   {
@@ -64,39 +69,33 @@ const Routes = [
     element: <UserView />,
   },
   {
+    path: "/calendar",
+    element: <CalendarComponent />,
+  },
+  {
     path: "/login",
     element: <Login />,
-    meta: {
-      layout: "blank",
-    },
+    meta: { layout: "blank" },
   },
   {
     path: "/register",
     element: <Register />,
-    meta: {
-      layout: "blank",
-    },
+    meta: { layout: "blank" },
   },
   {
     path: "/forgot-password",
     element: <ForgotPassword />,
-    meta: {
-      layout: "blank",
-    },
+    meta: { layout: "blank" },
   },
   {
     path: "/error",
     element: <Error />,
-    meta: {
-      layout: "blank",
-    },
+    meta: { layout: "blank" },
   },
   {
     path: "*",
     element: <Error />,
-    meta: {
-      layout: "blank",
-    },
+    meta: { layout: "blank" },
   },
 ];
 
@@ -104,52 +103,39 @@ const getRouteMeta = (route) => {
   if (isObjEmpty(route.element.props)) {
     if (route.meta) {
       return { routeMeta: route.meta };
-    } else {
-      return {};
     }
+    return {};
   }
 };
 
-// ** Return Filtered Array of Routes & Paths
 const MergeLayoutRoutes = (layout, defaultLayout) => {
   const LayoutRoutes = [];
 
-  if (Routes) {
-    Routes.filter((route) => {
-      let isBlank = false;
-      // ** Checks if Route layout or Default layout matches current layout
-      if (
-        (route.meta && route.meta.layout && route.meta.layout === layout) ||
-        ((route.meta === undefined || route.meta.layout === undefined) &&
-          defaultLayout === layout)
-      ) {
-        const RouteTag = PublicRoute;
+  Routes.forEach((route) => {
+    let isBlank = false;
+    if (
+      (route.meta && route.meta.layout && route.meta.layout === layout) ||
+      ((route.meta === undefined || route.meta.layout === undefined) &&
+        defaultLayout === layout)
+    ) {
+      const RouteTag = PublicRoute;
 
-        // ** Check for public or private route
-        if (route.meta) {
-          route.meta.layout === "blank" ? (isBlank = true) : (isBlank = false);
-        }
-        if (route.element) {
-          const Wrapper =
-            // eslint-disable-next-line multiline-ternary
-            isObjEmpty(route.element.props) && isBlank === false
-              ? // eslint-disable-next-line multiline-ternary
-                LayoutWrapper
-              : Fragment;
-
-          route.element = (
-            <Wrapper {...(isBlank === false ? getRouteMeta(route) : {})}>
-              <RouteTag route={route}>{route.element}</RouteTag>
-            </Wrapper>
-          );
-        }
-
-        // Push route to LayoutRoutes
-        LayoutRoutes.push(route);
+      if (route.meta) {
+        isBlank = route.meta.layout === "blank";
       }
-      return LayoutRoutes;
-    });
-  }
+      if (route.element) {
+        const Wrapper = isBlank ? Fragment : LayoutWrapper;
+        route.element = (
+          <Wrapper {...(isBlank ? {} : getRouteMeta(route))}>
+            <RouteTag route={route}>{route.element}</RouteTag>
+          </Wrapper>
+        );
+      }
+
+      LayoutRoutes.push({ ...route }); // Create new object to avoid mutating original
+    }
+  });
+
   return LayoutRoutes;
 };
 
@@ -158,10 +144,8 @@ const getRoutes = (layout) => {
   const layouts = ["vertical", "horizontal", "blank"];
 
   const AllRoutes = [];
-
   layouts.forEach((layoutItem) => {
     const LayoutRoutes = MergeLayoutRoutes(layoutItem, defaultLayout);
-
     AllRoutes.push({
       path: "/",
       element: getLayout[layoutItem] || getLayout[defaultLayout],
@@ -171,4 +155,12 @@ const getRoutes = (layout) => {
   return AllRoutes;
 };
 
-export { DefaultRoute, TemplateTitle, Routes, getRoutes };
+export {
+  DefaultRoute,
+  TemplateTitle,
+  Routes,
+  getRoutes,
+  MemoizedVerticalLayout,
+  MemoizedHorizontalLayout,
+  MemoizedBlankLayout,
+};

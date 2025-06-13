@@ -47,6 +47,23 @@ export const formatDatePersian = (
     calendar: "persian",
   }).format(new Date(value));
 };
+export function formatToTwoDecimals(num) {
+  // اگر مقدار null یا undefined بود، 0 برگردانید
+  if (num === null || num === undefined) {
+    return 0.0;
+  }
+
+  // تبدیل به عدد (اگر رشته باشد)
+  const number = typeof num === "string" ? parseFloat(num) : num;
+
+  // اگر تبدیل به عدد ناموفق بود (NaN شد)، 0 برگردانید
+  if (isNaN(number)) {
+    return 0.0;
+  }
+
+  // محدود کردن به دو رقم اعشار
+  return parseFloat(number.toFixed(2));
+}
 
 // ** Returns short month of passed date
 export const formatDateToMonthShort = (value, toTimeForCurrentDay = true) => {
@@ -59,6 +76,22 @@ export const formatDateToMonthShort = (value, toTimeForCurrentDay = true) => {
 
   return new Intl.DateTimeFormat("en-US", formatting).format(new Date(value));
 };
+/**
+ * تبدیل عدد به فرمت تومان ایرانی با جداکننده هزارگان
+ * @param {number|string} value - مقدار عددی که باید فرمت شود
+ * @returns {string} رشته فرمت‌شده به تومان (مثال: "۱,۲۳۴,۵۶۷ تومان")
+ */
+export function formatToToman(value) {
+  // تبدیل به عدد و بررسی معتبر بودن
+  const number = typeof value === "string" ? parseFloat(value) : Number(value);
+  if (isNaN(number)) return "۰ تومان"; // مقدار نامعتبر
+
+  // فرمت‌دهی با جداکننده هزارگان به فارسی
+  const formatted = new Intl.NumberFormat("fa-IR").format(number);
+
+  // اضافه کردن واحد پول
+  return `${formatted} تومان`;
+}
 
 /**
  ** Return if user is logged in

@@ -2,12 +2,12 @@
 import { useState, Fragment } from "react";
 
 // ** کامپوننت‌های ری‌اکت‌استرپ
-import { Card, CardBody, Button, Badge } from "reactstrap";
+import { Card, CardBody, Button, Badge, Input } from "reactstrap";
 
 // ** کامپوننت‌های شخص ثالث
 import Swal from "sweetalert2";
 
-import { Check, Briefcase, X } from "react-feather";
+import { Check, Briefcase, X, Edit, User, Upload } from "react-feather";
 
 import withReactContent from "sweetalert2-react-content";
 
@@ -20,10 +20,15 @@ import { formatDatePersian } from "../../../utility/Utils";
 
 import EditModal from "../editModal";
 import {
+  addImageUser,
   getAccessToUser,
   reverseToActiveUser,
+  setUserCurrentImage,
 } from "../../../@core/services/Users";
-
+import { Modal, ModalHeader, ModalBody, ModalFooter } from "reactstrap";
+import toast from "react-hot-toast";
+import { useDispatch } from "react-redux";
+import { updateUser } from "../../../redux/appUsersSlice";
 // رنگ‌های نقش‌ها
 const roleColors = {
   editor: "light-info",
@@ -45,40 +50,162 @@ const MySwal = withReactContent(Swal);
 const UserInfoCard = ({ selectedUser }) => {
   // ** حالت‌ها
   const [show, setShow] = useState(false);
-
+  const [modalOpen, setModalOpen] = useState(false);
+  const [previewImage, setPreviewImage] = useState(null);
+  const [selectedFile, setSelectedFile] = useState(null);
   // ** هوک فرم
-
+  const dispatch = useDispatch();
   // ** رندر تصویر کاربر
   const renderUserImg = () => {
-    if (selectedUser !== null && selectedUser.currentPictureAddress.length) {
-      return (
-        <img
-          height="110"
-          width="110"
-          alt="تصویر کاربر"
-          src={selectedUser.currentPictureAddress}
-          className="img-fluid rounded mt-3 mb-2 flex justify-center text-center items-center"
-        />
-      );
-    } else {
-      return (
-        <Avatar
-          initials
-          color={selectedUser.avatarColor || "light-primary"}
-          className="rounded mt-3 mb-2"
-          content={selectedUser.fName}
-          contentStyles={{
-            borderRadius: 0,
-            fontSize: "calc(48px)",
-            width: "100%",
-            height: "100%",
-          }}
-          style={{
-            height: "110px",
-            width: "110px",
-          }}
-        />
-      );
+    console.log(selectedUser);
+    const hasPicture =
+      selectedUser?.currentPictureAddress?.length > 0 &&
+      selectedUser?.currentPictureAddress !== "Not-set";
+
+    return (
+      <div className="position-relative d-flex justify-content-center align-items-center">
+        {hasPicture ? (
+          <img
+            height="110"
+            width="110"
+            alt="تصویر کاربر"
+            src={selectedUser.currentPictureAddress}
+            className="img-fluid rounded mt-3 mb-2"
+          />
+        ) : (
+          <div
+            className="d-flex justify-content-center align-items-center rounded mt-3 mb-2"
+            style={{
+              height: "110px",
+              width: "110px",
+              backgroundColor: "#e0e0e0",
+            }}
+          >
+            <User size={60} color="#6c757d" />
+          </div>
+        )}
+        <div
+          className="position-absolute"
+          style={{ top: "0", right: "0", cursor: "pointer" }}
+          onClick={() => setModalOpen(true)}
+        >
+          <Edit
+            className="img-fluid rounded mt-3 mb-2"
+            size={20}
+            color="#007bff"
+          />
+        </div>
+      </div>
+    );
+  };
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      if (!file.type.startsWith("image/")) {
+        toast.error("لطفاً یک فایل تصویری (JPG, PNG) انتخاب کنید");
+        return;
+      }
+      if (file.size > 5 * 1024 * 1024) {
+        toast.error("حجم فایل نباید بیشتر از 5 مگابایت باشد");
+        return;
+      }
+
+      setSelectedFile(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPreviewImage(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleSetActivePicture = async () => {
+    console.log(selectedUser);
+    // بررسی می‌کند که آیا فایلی برای آپلود انتخاب شده است یا خیر.
+    // اگر فایلی انتخاب نشده باشد، از تابع خارج می‌شود.
+    if (!selectedFile) {
+      console.warn("هیچ فایلی برای آپلود انتخاب نشده است."); // پیام هشدار برای توسعه‌دهنده
+      return;
+    }
+
+    // ایجاد یک شیء FormData برای ارسال داده‌ها به صورت چندقسمتی (multipart/form-data).
+    const formData = new FormData();
+
+    // 1. اضافه کردن تصویر انتخاب شده به FormData
+    // 'formFile' نام فیلدی است که سرور انتظار دارد.
+    formData.append("formFile", selectedFile);
+
+    // 2. اضافه کردن تمام فیلدهای selectedUser به FormData
+    // این بخش اطمینان حاصل می‌کند که تمام داده‌های کاربر انتخاب شده نیز به همراه تصویر ارسال شوند.
+    // فرض بر این است که 'selectedUser' یک شیء حاوی اطلاعات کاربر است.
+    if (selectedUser) {
+      // اطمینان از وجود selectedUser قبل از پیمایش
+      for (const key in selectedUser) {
+        // بررسی می‌کند که فیلد واقعاً متعلق به شیء selectedUser باشد و null یا undefined نباشد.
+        if (
+          Object.hasOwnProperty.call(selectedUser, key) &&
+          selectedUser[key] !== null &&
+          selectedUser[key] !== undefined
+        ) {
+          // اگر فیلد یک فایل یا Blob باشد، آن را مستقیماً اضافه می‌کند.
+          // این برای مواردی است که selectedUser ممکن است شامل فایل‌های دیگری نیز باشد.
+          if (
+            selectedUser[key] instanceof File ||
+            selectedUser[key] instanceof Blob
+          ) {
+            formData.append(key, selectedUser[key]);
+          } else {
+            // برای سایر فیلدها (مانند رشته، عدد، بولین)، آن‌ها را به رشته تبدیل کرده و اضافه می‌کند.
+            // این کار از بروز خطاهای احتمالی در سمت سرور جلوگیری می‌کند و تضمین می‌کند
+            // که همه مقادیر به صورت رشته ارسال شوند.
+            formData.append(key, String(selectedUser[key]));
+          }
+        }
+      }
+    }
+
+    try {
+      // فراخوانی تابع addImageUser برای آپلود تصویر به سرور.
+      // این تابع باید یک API call به بک‌اند شما باشد.
+      const res = await addImageUser(formData);
+
+      // بررسی موفقیت‌آمیز بودن عملیات آپلود تصویر بر اساس پاسخ سرور.
+      if (res.success) {
+        // نمایش پیام موفقیت به کاربر با استفاده از toast.
+        toast.success("عملیات آپلود عکس با موفقیت انجام شد");
+
+        // استخراج imageId از پاسخ سرور.
+        // فرض بر این است که imageId در res.data.imageId قرار دارد.
+        // از Optional Chaining (?.) برای دسترسی ایمن به مشخصه 'data' و 'imageId' استفاده می‌شود.
+        const imageId = res?.id;
+
+        // بررسی می‌کند که imageId با موفقیت دریافت شده باشد.
+        // به‌روزرسانی تصویر پروفایل کاربر
+        const updateResponse = await dispatch(
+          updateUser({
+            ...selectedUser,
+            currentPictureAddress: imageId,
+          })
+        );
+
+        // بررسی موفقیت به‌روزرسانی
+        if (updateResponse.meta.requestStatus === "fulfilled") {
+          toast.success("تصویر پروفایل با موفقیت به‌روزرسانی شد.");
+        } else {
+          throw new Error(
+            updateResponse.payload?.message || "خطا در تنظیم تصویر پروفایل"
+          );
+        }
+      } else {
+        // اگر آپلود تصویر ناموفق بود، یک خطا پرتاب می‌کند.
+        // پیام خطا از پاسخ سرور یا یک پیام عمومی استفاده می‌کند.
+        throw new Error(res.message || "خطا در آپلود تصویر");
+      }
+    } catch (error) {
+      // گرفتن و مدیریت هرگونه خطایی که در طول فرایند (آپلود یا تنظیم تصویر) رخ می‌دهد.
+      console.error("خطا در handleSetActivePicture:", error); // لاگ کردن خطای کامل برای توسعه‌دهنده
+      // نمایش پیام خطای عمومی و کاربرپسند به کاربر.
+      toast.error("خطا در آپلود تصویر. لطفا دوباره تلاش کنید.");
     }
   };
 
@@ -237,6 +364,12 @@ const UserInfoCard = ({ selectedUser }) => {
       return false;
     });
   };
+  const handleCancel = () => {
+    setPreviewImage(null);
+    setSelectedFile(null);
+    setModalOpen(false);
+  };
+
   return (
     <Fragment>
       <Card>
@@ -244,6 +377,111 @@ const UserInfoCard = ({ selectedUser }) => {
           <div className="user-avatar-section">
             <div className="d-flex align-items-center flex-column">
               {renderUserImg()}
+              <Modal
+                isOpen={modalOpen}
+                toggle={() => setModalOpen(!modalOpen)}
+                centered
+                className="modal-dialog-centered"
+              >
+                <ModalHeader
+                  toggle={() => setModalOpen(!modalOpen)}
+                  style={{
+                    direction: "rtl",
+                    fontFamily: '"Vazirmatn", sans-serif',
+                  }}
+                >
+                  آپلود تصویر پروفایل
+                </ModalHeader>
+                <ModalBody>
+                  <div className="d-flex flex-column align-items-center gap-3">
+                    {previewImage ? (
+                      <div
+                        className="position-relative"
+                        style={{
+                          width: "150px",
+                          height: "150px",
+                          borderRadius: "15px",
+                          overflow: "hidden",
+                          boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
+                          transition: "all 0.3s ease",
+                        }}
+                      >
+                        <img
+                          src={previewImage}
+                          alt="پیش‌نمایش"
+                          style={{
+                            width: "100%",
+                            height: "100%",
+                            objectFit: "cover",
+                          }}
+                        />
+                      </div>
+                    ) : (
+                      <div
+                        className="d-flex justify-content-center align-items-center"
+                        style={{
+                          width: "150px",
+                          height: "150px",
+                          border: "2px dashed #ccc",
+                          borderRadius: "15px",
+                          backgroundColor: "#f8f9fa",
+                          transition: "all 0.3s ease",
+                        }}
+                      >
+                        <Upload size={40} color="#6c757d" />
+                      </div>
+                    )}
+                    <Input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleFileChange}
+                      style={{
+                        maxWidth: "300px",
+                        borderRadius: "8px",
+                        padding: "8px",
+                        border: "1px solid #ced4da",
+                        transition: "all 0.3s ease",
+                      }}
+                    />
+                    <p
+                      className="text-muted"
+                      style={{
+                        fontSize: "12px",
+                        direction: "rtl",
+                        fontFamily: '"Vazirmatn", sans-serif',
+                      }}
+                    >
+                      فقط فایل‌های تصویری (JPG, PNG) با حجم حداکثر 5MB مجاز
+                      هستند.
+                    </p>
+                  </div>
+                </ModalBody>
+                <ModalFooter style={{ direction: "rtl" }}>
+                  <Button
+                    color="primary"
+                    onClick={handleSetActivePicture}
+                    disabled={!selectedFile}
+                    style={{
+                      borderRadius: "8px",
+                      padding: "8px 20px",
+                      transition: "all 0.3s ease",
+                    }}
+                  >
+                    تنظیم تصویر
+                  </Button>
+                  <Button
+                    color="secondary"
+                    onClick={handleCancel}
+                    style={{
+                      borderRadius: "8px",
+                      padding: "8px 20px",
+                      transition: "all 0.3s ease",
+                    }}
+                  >
+                    لغو
+                  </Button>
+                </ModalFooter>
+              </Modal>
               <div className="d-flex flex-column align-items-center text-center">
                 <div className="user-info">
                   <h4>
@@ -363,29 +601,32 @@ const UserInfoCard = ({ selectedUser }) => {
             ) : null}
           </div>
           <div className="d-flex justify-content-center pt-2">
-            <Button color="primary" onClick={() => setShow(true)}>
-              ویرایش
-            </Button>
-            <Button
-              className="ms-1"
-              color="success"
-              outline
-              onClick={handleSuspendedClick}
-            >
-              فعال کردن
-            </Button>
-          </div>
-          <div className="d-flex justify-content-center pt-2">
             {" "}
             <Button
-              className="mr-auto "
+              className="ms-1 w-auto"
               color="success"
               outline
               onClick={handleGetAcceessClick}
             >
               اضافه کردن دسترسی
             </Button>
+            <Button
+              className="ms-1 w-auto"
+              color="success"
+              outline
+              onClick={handleSuspendedClick}
+            >
+              فعال کردن
+            </Button>{" "}
+            <Button
+              className="ms-1 w-auto"
+              color="primary"
+              onClick={() => setShow(true)}
+            >
+              ویرایش
+            </Button>
           </div>
+          <div className="d-flex justify-content-center pt-2"></div>
         </CardBody>
       </Card>
 

@@ -1,3 +1,4 @@
+import { error } from "jquery";
 import instance from "../axiosInstance";
 
 export const getAllUsers = async (urlParams) => {
@@ -70,6 +71,25 @@ export const getAccessToUser = async (data, enable) => {
       data
     );
     return response;
+  } catch (error) {
+    console.error("Error in updateUserApi:", error);
+    throw error.response?.data || error.message;
+  }
+};
+
+export const addImageUser = async (data) => {
+  try {
+    const res = instance.post("/SharePanel/AddProfileImage", data);
+    return res;
+  } catch (error) {
+    console.error("Error in updateUserApi:", error);
+    throw error.response?.data || error.message;
+  }
+};
+export const setUserCurrentImage = async (data) => {
+  try {
+    const res = instance.post("/SharePanel/SelectProfileImage", data);
+    return res;
   } catch (error) {
     console.error("Error in updateUserApi:", error);
     throw error.response?.data || error.message;

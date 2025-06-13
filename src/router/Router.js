@@ -1,5 +1,4 @@
-// ** Router imports
-import { lazy } from "react";
+import { lazy, memo, useMemo } from "react";
 import { useRoutes, Navigate, Outlet } from "react-router-dom";
 
 // ** Layouts
@@ -17,25 +16,25 @@ import { getRoutes } from "./routes";
 // ** Components
 const Login = lazy(() => import("../pages/Login"));
 
+const AuthProtect = memo(() => {
+  const user = useMemo(() => getUserData(), []); // Cache user data
+
+  if (!user || !user.roles) {
+    return <Navigate to="/login" replace />;
+  }
+
+  if (user.roles.includes("Administrator")) {
+    return <Outlet />;
+  } else if (user.roles.includes("Student")) {
+    return <Navigate to="/student" replace />;
+  }
+
+  return <Navigate to="/login" replace />;
+});
+
 const Router = () => {
   const { layout } = useLayout();
-  const allRoutes = getRoutes(layout);
-
-  const AuthProtect = () => {
-    const user = getUserData();
-
-    if (!user || !user.roles) {
-      return <Navigate to="/login" replace />;
-    }
-
-    if (user.roles.includes("Administrator")) {
-      return <Outlet />;
-    } else if (user.roles.includes("Student")) {
-      return <Navigate to="/student" replace />;
-    }
-
-    return <Navigate to="/login" replace />;
-  };
+  const allRoutes = useMemo(() => getRoutes(layout), [layout]); // Memoize routes
 
   const routes = useRoutes([
     {
@@ -58,4 +57,4 @@ const Router = () => {
   return routes;
 };
 
-export default Router;
+export default memo(Router);

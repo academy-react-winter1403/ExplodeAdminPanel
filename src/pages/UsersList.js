@@ -32,7 +32,7 @@ const UsersList = () => {
         <Col lg="3" sm="6">
           <StatsHorizontal
             color="primary"
-            statTitle="Total Users"
+            statTitle="کل کاربران"
             icon={<User size={20} />}
             renderStats={
               <h3 className="fw-bolder mb-75">
@@ -51,7 +51,7 @@ const UsersList = () => {
         <Col lg="3" sm="6">
           <StatsHorizontal
             color="danger"
-            statTitle="Role Count"
+            statTitle="تعداد نقش"
             icon={<UserPlus size={20} />}
             renderStats={
               <h3 className="fw-bolder mb-75">
