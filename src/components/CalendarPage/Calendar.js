@@ -1,64 +1,52 @@
 import { useEffect, useRef } from "react";
-import FullCalendar from "@fullcalendar/react";
-import listPlugin from "@fullcalendar/list";
+import { Calendar } from "@fullcalendar/core";
+import { Card, CardBody } from "reactstrap";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
+import listPlugin from "@fullcalendar/list";
 import interactionPlugin from "@fullcalendar/interaction";
-import { Card, CardBody } from "reactstrap";
 
-const Calendar = ({
-  events,
-  isRtl = false,
-  setCalendarApi,
-  onDateRangeChange,
-  onEventClick, // این prop رو می‌گیریم
-}) => {
+// استایل‌های ضروری
+import "@fullcalendar/common/main.css";
+import "@fullcalendar/daygrid/main.css";
+import "@fullcalendar/timegrid/main.css";
+import "@fullcalendar/list/main.css";
+
+const SimpleCalendar = ({ events, isRtl }) => {
   const calendarRef = useRef(null);
+  const calendarInstance = useRef(null);
 
   useEffect(() => {
-    if (calendarRef.current && setCalendarApi) {
-      setCalendarApi(calendarRef.current.getApi());
+    if (calendarRef.current && !calendarInstance.current) {
+      calendarInstance.current = new Calendar(calendarRef.current, {
+        plugins: [dayGridPlugin, timeGridPlugin, listPlugin, interactionPlugin],
+        initialView: "dayGridMonth",
+        events: events,
+        direction: isRtl ? "rtl" : "ltr",
+        headerToolbar: {
+          start: "prev,next today",
+          center: "title",
+          end: "dayGridMonth,timeGridWeek,timeGridDay,listMonth",
+        },
+      });
+      calendarInstance.current.render();
     }
-  }, [setCalendarApi]);
 
-  const handleDatesSet = (arg) => {
-    const startDate = arg.start.toISOString();
-    const adjustedEnd = new Date(arg.end.getTime() - 1 * 24 * 60 * 60 * 1000);
-    const endDate = adjustedEnd.toISOString();
-
-    if (onDateRangeChange) {
-      onDateRangeChange({ startDate, endDate });
-    }
-  };
+    return () => {
+      if (calendarInstance.current) {
+        calendarInstance.current.destroy();
+        calendarInstance.current = null;
+      }
+    };
+  }, [events, isRtl]);
 
   return (
     <Card className="shadow-none border-0 mb-0 rounded-0">
       <CardBody className="pb-0">
-        <FullCalendar
-          ref={calendarRef}
-          events={events}
-          plugins={[
-            interactionPlugin,
-            dayGridPlugin,
-            timeGridPlugin,
-            listPlugin,
-          ]}
-          initialView="dayGridMonth"
-          editable={false}
-          dayMaxEvents={true}
-          navLinks={true}
-          direction={isRtl ? "rtl" : "ltr"}
-          headerToolbar={{
-            start: "prev,next today",
-            center: "title",
-            end: "dayGridMonth,timeGridWeek,timeGridDay,listMonth",
-          }}
-          datesSet={handleDatesSet}
-          eventClick={onEventClick} // وصل کردن هندلر کلیک رویداد
-        />
+        <div ref={calendarRef}></div>
       </CardBody>
     </Card>
   );
 };
 
-export default Calendar;
+export default SimpleCalendar;

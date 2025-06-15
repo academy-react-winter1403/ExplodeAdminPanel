@@ -1,7 +1,7 @@
 import { Fragment, useState, useEffect } from "react";
 import { Row, Col, Button, ButtonGroup } from "reactstrap";
 import classnames from "classnames";
-import Calendar from "../components/CalendarPage/Calendar";
+import SimpleCalendar from "../components/CalendarPage/Calendar";
 
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -181,7 +181,7 @@ const CalendarComponent = () => {
 
         <Row>
           <Col>
-            <Calendar
+            <SimpleCalendar
               events={formattedEvents}
               setCalendarApi={setCalendarApi}
               onDateRangeChange={handleDateRangeChange}
